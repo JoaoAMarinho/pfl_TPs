@@ -6,8 +6,8 @@ toBN n = if n < 10 then [n]
  
 auxSum :: [Int] -> [Int] -> [Int]
 auxSum [] [] = []
-auxSum (x:xs) [] = x : auxSum xs [] 
-auxSum [] (y:ys) = y : auxSum [] ys
+auxSum (x:xs) [] = x:xs
+auxSum [] (y:ys) = y:ys
 auxSum (x:xs) (y:ys) = (x+y) : auxSum xs ys
 
 sumBN :: [Int] -> [Int] -> [Int]
