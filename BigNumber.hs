@@ -1,4 +1,25 @@
--- ainda não está de acordo com as regras do enunciado, foi só um rascunho
+import Data.Char
+
+type BigNumber = [Int] 
+
+scanner :: String -> BigNumber
+scanner [] = []
+scanner (x:xs) = scanner xs ++ [digitToInt x]
+
+output :: BigNumber -> String
+output [] = []
+output (x:xs) = output xs ++ [intToDigit x]
+
+-- somaBN :: BigNumber -> BigNumber -> BigNumber
+
+-- subBN :: BigNumber -> BigNumber -> BigNumber
+
+-- mulBN :: BigNumber -> BigNumber -> BigNumber
+
+-- divBN :: BigNumber -> BigNumber -> (BigNumber, BigNumber)
+
+
+--  só um rascunho
 
 toBN :: Int -> [Int]
 toBN n = if n < 10 then [n]
