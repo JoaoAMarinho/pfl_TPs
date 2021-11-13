@@ -16,15 +16,12 @@ sumBN (x:xs) [] = x:xs
 sumBN [] (y:ys) = y:ys
 sumBN (x:xs) (y:ys) = auxSum (toBN (x+y)) (0 : (sumBN xs ys))
 
-{- 
-	[3, 2, 1]
-  + [8, 9]
-  ____________
-    [1, 1]       | (3+8=11 -> [1,1])
-	[0, 1, 1]    | (2+9=11 -> [1,1] e acrescentamos um 0 à esquerda porque estamos nas dezenas - na verdade estamos a somar 90+20) 
-  + [0, 0, 1]    | (1+0=1 -> [1] e acrescentamos mais um 0 à esquerda porque estamos nas centenas - na verdade estamos a somar 100+0)
-  ____________
-	[1, 2, 2]    | resultado de somar as várias parcelas obtidas - aqui já não vai haver overflow de unidades para dezenas e dezenas para centenas, daí a função auxiliar
 
-	há maneira de simplificar??
- -}
+
+auxMult :: Int -> [Int] -> [Int]
+auxMult s [] = []
+auxMult s (x:xs) = sumBN (toBN (s*x)) (0 : auxMult s xs)
+                 
+multBN :: [Int] -> [Int] -> [Int]
+multBN [] _ = []
+multBN (x:xs) ys = sumBN (auxMult x ys) (0: multBN xs ys)
