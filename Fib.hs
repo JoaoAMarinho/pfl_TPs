@@ -18,5 +18,4 @@ fibLista n = fromIntegral ((!!) dynamicFibList (fromIntegral n))
 infiniteFibList = 0 : 1 : zipWith (+) infiniteFibList (tail infiniteFibList)
 
 fibListaInfinita :: (Integral a) => a -> a
-fibListaInfinita n = fromIntegral ((!!) infiniteFibList (fromIntegral n))
-
+fibListaInfinita n = fromIntegral ( infiniteFibList !! (fromIntegral n))
