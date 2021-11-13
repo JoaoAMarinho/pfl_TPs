@@ -20,29 +20,23 @@ output (x:xs) = output xs ++ [intToDigit x]
 
 
 --  só um rascunho
+somaCarry :: Int -> BigNumber -> BigNumber
+somaCarry c [] = [c]
+somaCarry c (x:xs) = (x+c):xs
 
-toBN :: Int -> [Int]
-toBN n = if n < 10 then [n]
-		 else [mod n 10] ++ toBN (div n 10)  
- 
-auxSum :: [Int] -> [Int] -> [Int]
-auxSum [] [] = []
-auxSum (x:xs) [] = x:xs
-auxSum [] (y:ys) = y:ys
-auxSum (x:xs) (y:ys) = (x+y) : auxSum xs ys
+somaBN :: [Int] -> [Int] -> [Int]
+somaBN [] [] = []
+somaBN (x:xs) [] = x:xs
+somaBN [] (y:ys) = y:ys
+somaBN (x:xs) (y:ys) = if (x+y) > 9 then [mod (x+y) 10] ++ somaBN xs ys_
+                      else [x+y] ++ somaBN xs ys
+                      where ys_ = somaCarry (div (x+y) 10) ys
 
-sumBN :: [Int] -> [Int] -> [Int]
-sumBN [] [] = []
-sumBN (x:xs) [] = x:xs
-sumBN [] (y:ys) = y:ys
-sumBN (x:xs) (y:ys) = auxSum (toBN (x+y)) (0 : (sumBN xs ys))
-
-
-
+-- multiplica por um escalar
 auxMult :: Int -> [Int] -> [Int]
 auxMult s [] = []
-auxMult s (x:xs) = sumBN (toBN (s*x)) (0 : auxMult s xs)
+auxMult s (x:xs) = somaBN (toBN (s*x)) (0 : auxMult s xs)
                  
 multBN :: [Int] -> [Int] -> [Int]
 multBN [] _ = []
-multBN (x:xs) ys = sumBN (auxMult x ys) (0: multBN xs ys)
+multBN (x:xs) ys = somaBN (auxMult x ys) (0: multBN xs ys)
