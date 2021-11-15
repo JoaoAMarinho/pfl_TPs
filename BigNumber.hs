@@ -13,26 +13,27 @@ output bn | fst bn = reverse numbers
           | not (fst bn) = '-' : reverse numbers
           where numbers = map intToDigit (snd bn)
 
-somaBN, subBN, mulBN :: BigNumber -> BigNumber -> BigNumber
+somaBN, subBN :: BigNumber -> BigNumber -> BigNumber
 
 somaBN bn1 bn2 | fst bn1 == fst bn2 = (fst bn1, auxSoma numbers1 numbers2 0)
-               | otherwise = subBN bn1 bn2
-               where numbers1 = snd bn1 ++ repeat 0
-                     numbers2 = snd bn2 ++ repeat 0
+               | otherwise = subBN bn1 (not (fst bn2), numbers2)
+               where numbers1 = snd bn1 
+                     numbers2 = snd bn2 
 
-subBN bn1 bn2 | fst bn1 /= fst bn2 = somaBN bn1 (not (fst bn2), snd bn2)
-							| numbers1 == numbers2 = (True, [0])
-							| length numbers1 > length numbers2 = auxSub bn1 bn2
-							| length numbers2 > length numbers1 = auxSub bn2 bn1
-							| maior numbers1 numbers2 = auxSub bn1 bn2
-							| otherwise = auxSub bn2 bn1
-							where numbers1 = snd bn1
-							      numbers2 = snd bn2
-
-{- mulBN bn1 bn2 | fst bn1 == fst bn2 = (True, auxMul numbers1 numbers2)
+subBN bn1 bn2 | numbers1 == numbers2 && fst bn1 /= fst bn2 = (True, [0]) -- symmetric numbers
+              | fst bn1 /= fst bn2 = somaBN bn1 (not (fst bn2), numbers2)
+              | length numbers1 > length numbers2 = (fst bn1, auxSub numbers1 numbers2 0)
+              | length numbers2 > length numbers1 = (not (fst bn2), auxSub numbers2 numbers1 0)
+              | maior numbers1 numbers2 = (fst bn1, auxSub numbers1 numbers2 0)
+              | otherwise = (not (fst bn2), auxSub numbers2 numbers1 0)
+              where numbers1 = snd bn1
+                    numbers2 = snd bn2
+                   
+{- 
+mulBN bn1 bn2 | fst bn1 == fst bn2 = (True, auxMul numbers1 numbers2)
               | otherwise = (False, auxMul numbers1 numbers2)
               where numbers1 = snd bn1
-                    numbers2 = snd bn2 -}
+                    numbers2 = snd bn2  -}
 
 -- divBN :: BigNumber -> BigNumber -> (BigNumber, BigNumber)
 
@@ -40,29 +41,39 @@ subBN bn1 bn2 | fst bn1 /= fst bn2 = somaBN bn1 (not (fst bn2), snd bn2)
 -------------------------------- Auxiliar functions --------------------------------
 
 auxSoma :: [Int] -> [Int] -> Int -> [Int]
-auxSoma (0:xs) (0:ys) 0 = []
-auxSoma (0:xs) (0:ys) carry = [carry]
+auxSoma [] [] carry = if carry == 0 then [] else [carry]  
+auxSoma (x:xs) [] carry = [mod (x + carry) 10] ++ auxSoma xs [] (div (x + carry) 10)
+auxSoma [] (y:ys) carry = [mod (y + carry) 10] ++ auxSoma [] ys (div (y + carry) 10)
 auxSoma (x:xs) (y:ys) carry | soma > 9 = [mod soma 10] ++ auxSoma xs ys newCarry
                             | otherwise = [soma] ++ auxSoma xs ys 0
                             where soma = x + y + carry
                                   newCarry = div soma 10
 
 
-{- -- multiplies every number in the BN by the given scalar
-scaleBN :: Int -> [Int] -> [Int]
-scaleBN s [] = []
-scaleBN s (x:xs) = somaBN mul (0 : scaleBN s xs) carry
-                   where mul = mod (s * x) 10
-                         carry = div (s * x) 10
-          
+auxSub :: [Int] -> [Int] -> Int -> [Int]
+auxSub [] [] _ = []
+auxSub (x:[]) [] carry = if ((x - carry) == 0) then [] else [x - carry]
+auxSub (x:[]) (y:[]) carry = if (x - (y + carry) == 0) then [] else [x - (y + carry)]
+auxSub (x:xs) ys carry | soma > x = [x + 10 - soma] ++ auxSub xs ys_ 1
+                       | otherwise = [x - soma] ++ auxSub xs ys_ 0
+                       where soma = if (ys == []) then carry else (head ys + carry)
+                             ys_ = if (ys == []) then [] else (tail ys)
+
+
+-- multiplies every number in the BN by the given scalar
+scaleBN :: Int -> [Int] -> Int -> [Int]
+scaleBN s [] carry = if (carry == 0) then [] else [carry]
+scaleBN s (x:xs) carry = [mul] ++ scaleBN s xs newCarry
+                         where mul = mod (s * x + carry) 10 
+                               newCarry = div (s * x + carry) 10
 
 auxMul :: [Int] -> [Int] -> [Int]
-auxMul [] _ = []
-auxMul (x:xs) ys = somaBN (scaleBN x ys) (0: auxMul xs ys) 0 -}
+auxMul xs ys = foldl (\x (y,i) -> auxSoma x ((take i (repeat 0)) ++ y) 0) [] (zip [scaleBN x ys 0 | x <- xs] [0,1..])
+
 
 
 -- true if the 1st BN is bigger than the 2nd BN, false otherwise
-maior :: [Int] -> [Int] -> [Int]
+maior :: [Int] -> [Int] -> Bool
 maior [] [] = False
 maior (x:xs) (y:ys) | x>y = True
                     | otherwise = maior xs ys
