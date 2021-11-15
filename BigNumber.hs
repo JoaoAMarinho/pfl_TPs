@@ -29,10 +29,10 @@ subBN bn1 bn2 | fst bn1 /= fst bn2 = somaBN bn1 (not (fst bn2), snd bn2)
 							where numbers1 = snd bn1
 							      numbers2 = snd bn2
 
-mulBN bn1 bn2 | fst bn1 == fst bn2 = (True, auxMul numbers1 numbers2)
+{- mulBN bn1 bn2 | fst bn1 == fst bn2 = (True, auxMul numbers1 numbers2)
               | otherwise = (False, auxMul numbers1 numbers2)
               where numbers1 = snd bn1
-                    numbers2 = snd bn2
+                    numbers2 = snd bn2 -}
 
 -- divBN :: BigNumber -> BigNumber -> (BigNumber, BigNumber)
 
@@ -48,7 +48,7 @@ auxSoma (x:xs) (y:ys) carry | soma > 9 = [mod soma 10] ++ auxSoma xs ys newCarry
                                   newCarry = div soma 10
 
 
--- multiplies every number in the BN by the given scalar
+{- -- multiplies every number in the BN by the given scalar
 scaleBN :: Int -> [Int] -> [Int]
 scaleBN s [] = []
 scaleBN s (x:xs) = somaBN mul (0 : scaleBN s xs) carry
@@ -58,11 +58,11 @@ scaleBN s (x:xs) = somaBN mul (0 : scaleBN s xs) carry
 
 auxMul :: [Int] -> [Int] -> [Int]
 auxMul [] _ = []
-auxMul (x:xs) ys = somaBN (scaleBN x ys) (0: auxMul xs ys) 0
+auxMul (x:xs) ys = somaBN (scaleBN x ys) (0: auxMul xs ys) 0 -}
 
 
 -- true if the 1st BN is bigger than the 2nd BN, false otherwise
 maior :: [Int] -> [Int] -> [Int]
 maior [] [] = False
 maior (x:xs) (y:ys) | x>y = True
-							      | otherwise = maior xs ys
+                    | otherwise = maior xs ys
