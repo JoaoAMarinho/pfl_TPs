@@ -16,24 +16,32 @@ output bn | fst bn = numbers
 somaBN, subBN, mulBN :: BigNumber -> BigNumber -> BigNumber
 
 somaBN bn1 bn2 | fst bn1 == fst bn2 = (fst bn1, reverse (auxSoma numbers1 numbers2 0))
-               | otherwise = subBN bn1 (not (fst bn2), numbers2)
+               | otherwise = subBN bn1 (not (fst bn2), snd bn2)
                where numbers1 = reverse (snd bn1)
                      numbers2 = reverse (snd bn2)
 
-subBN bn1 bn2 | numbers1 == numbers2 && fst bn1 /= fst bn2 = (True, [0]) -- symmetric numbers
-              | fst bn1 /= fst bn2 = somaBN bn1 (not (fst bn2), numbers2)
-              | maior numbers1 numbers2 = (fst bn1, reverse (auxSub numbers1 numbers2 0))
+subBN bn1 bn2 | numbers1 == numbers2 && fst bn1 == fst bn2 = (True, [0]) -- symmetric numbers
+              | fst bn1 /= fst bn2 = somaBN bn1 (not (fst bn2), snd bn2)
+              | maior (snd bn1) (snd bn2) = (fst bn1, reverse (auxSub numbers1 numbers2 0))
               | otherwise = (not (fst bn2), reverse (auxSub numbers2 numbers1 0))
               where numbers1 = reverse (snd bn1)
                     numbers2 = reverse (snd bn2)
 
 
-mulBN bn1 bn2 | fst bn1 == fst bn2 = (True, reverse (auxMul numbers1 numbers2))
+mulBN bn1 bn2 | numbers1 == [0] || numbers2 == [0] = (True, [0])
+              | fst bn1 == fst bn2 = (True, reverse (auxMul numbers1 numbers2))
               | otherwise = (False, reverse (auxMul numbers1 numbers2))
               where numbers1 = reverse (snd bn1)
                     numbers2 = reverse (snd bn2)
 
--- divBN :: BigNumber -> BigNumber -> (BigNumber, BigNumber)
+divBN :: BigNumber -> BigNumber -> (BigNumber, BigNumber)
+
+divBN bn1 (True, [1]) = (bn1, (True, [0]))
+divBN bn1 bn2 | maior numbers1 numbers2 = ((True, fst res),(True, snd res))
+              | otherwise = ((True, [0]), bn1)
+                where numbers1 = (snd bn1)
+                      numbers2 = (snd bn2)
+                      res = auxDiv numbers1 numbers2 [] []
 
 
 -------------------------------- Auxiliar functions --------------------------------
@@ -74,20 +82,21 @@ maior :: [Int] -> [Int] -> Bool
 maior [] [] = False
 maior (x:xs) (y:ys) | length (x:xs) > length (y:ys) = True
                     | length (y:ys) > length (x:xs) = False
-                    | length (y:ys) == length (x:xs) && x > y = True
+                    | x > y = True
+                    | y > x = False
                     | otherwise = maior xs ys
 
-{- dividendo :: [Int] -> [Int] -> [Int] -> ([Int], Int)
-dividendo [] ys d ix = ([], _) -- aqui o ix não vai importar porque não se encontrou dividendo
-dividendo (x:xs) ys d ix = if maior [x] ys then [d, i] else dividendo xs ys ([d]++[x]) (ix+1)
+auxDiv :: [Int] -> [Int] -> [Int] -> [Int] -> ([Int], [Int])
+auxDiv [] _ resto quociente = (dropWhile (==0) quociente, resto)
+auxDiv (x:xs) divisor dividendo q | newDividendo == divisor = auxDiv xs divisor [] (1:q)
+                                  | maior newDividendo divisor = auxDiv xs divisor (fst divison) (q++[snd divison])
+                                  | otherwise = auxDiv xs divisor newDividendo q
+                                  where newDividendo = dividendo++[x]
+                                        divison = subUntil newDividendo divisor 0
 
-
-250 / 4
-2 > 4 ? não. continua
-25 > 4 sim! pode dividir
-temos que guardar o indice para continuar a divisão
-se fst dividendo == [] então a divisão dá 0 e o resto é o próprio bn1
-e.g. 25 / 40 -> 2 > 40 ? não, continua. 25 > 40 ? não, continua.
-
-
--}
+subUntil :: [Int] -> [Int] -> Int -> ([Int], Int)
+subUntil dividendo divisor i | dividendo == divisor = ([0], i+1)
+                             | maior dividendo divisor = subUntil (reverse (auxSub revDividendo revDivisor 0)) divisor (i + 1)
+                             | otherwise = (dividendo, i)
+                             where revDividendo = (reverse dividendo)
+                                   revDivisor = (reverse divisor)
