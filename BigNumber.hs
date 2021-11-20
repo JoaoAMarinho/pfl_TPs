@@ -1,3 +1,4 @@
+module BigNumber(BigNumber, somaBN, subBN, mulBN, divBN, safeDivBN) where
 import Data.Char
 
 type BigNumber = (Bool,[Int])
@@ -42,6 +43,10 @@ divBN bn1 bn2 | maior numbers1 numbers2 = ((True, fst res),(True, snd res))
                 where numbers1 = (snd bn1)
                       numbers2 = (snd bn2)
                       res = auxDiv numbers1 numbers2 [] []
+
+safeDivBN :: BigNumber -> BigNumber -> Maybe (BigNumber, BigNumber)
+safeDivBN bn1 (_, [0]) = Nothing
+safeDivBN bn1 bn2 =   Just (divBN bn1 bn2)
 
 
 -------------------------------- Auxiliar functions --------------------------------
