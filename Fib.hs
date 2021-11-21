@@ -21,6 +21,7 @@ infiniteFibList = 0 : 1 : zipWith (+) infiniteFibList (tail infiniteFibList)
 fibListaInfinita :: (Integral a) => a -> a
 fibListaInfinita n = fromIntegral ( infiniteFibList !! (fromIntegral n))
 
+
 ----------------------------------- BigNumber Version ------------------------------------
 
 fibRecBN :: BigNumber -> BigNumber
@@ -30,15 +31,18 @@ fibRecBN (True, bn)  = somaBN (fibRecBN (subBN (True, bn) (True, [1])) ) (fibRec
 
 --
 
---DIFFICULTY level: high
 -- dynamicFibListBN = (True, [0]) : (True, [1]) : [ n | x <- [2..], let n = ((dynamicFibListBN !! (x-1)) + (dynamicFibListBN !! (x-2)))]
 --
 -- fibListaBN :: BigNumber -> BigNumber
--- fibListaBN n = fromIntegral ((!!) dynamicFibList (fromIntegral n))
+-- fibListaBN n = select n dynamicFibListBN
 
 --
 infiniteFibListBN = (True, [0]) : (True, [1]) : zipWith (somaBN) infiniteFibListBN (tail infiniteFibListBN)
 
---Almost Done
--- fibListaInfinitaBN :: BigNumber -> BigNumber
--- fibListaInfinitaBN n = infiniteFibListBN !! (fromIntegral n) Como se faz select de um Big Number ??
+fibListaInfinitaBN :: BigNumber -> BigNumber
+fibListaInfinitaBN n = select n infiniteFibListBN
+
+-- Aux functions
+select :: BigNumber -> [BigNumber] -> BigNumber
+select (True,[0]) xs = head xs
+select bn (x:xs)     = select (subBN bn (True, [1])) xs
