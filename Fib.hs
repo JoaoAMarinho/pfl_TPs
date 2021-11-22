@@ -7,12 +7,10 @@ fibRec n = fibRec (n-1) + fibRec (n-2)
 
 
 -------------------------------- Fibonacci dynamic version --------------------------------
-dynamicFibList = 0:1:[ n | x <- [2..], let n = ((dynamicFibList !! (x-1)) + (dynamicFibList !! (x-2)))]
 
 fibLista :: (Integral a) => a -> a
-fibLista n = fromIntegral ((!!) dynamicFibList (fromIntegral n))
-
--- fibLista i = (!!) (0 : 1 : [ 10 | v<-[2..i]]) (fromIntegral i)
+fibLista n = fromIntegral (dynamicFibList !! (fromIntegral n))
+           where dynamicFibList = 0:1:[ (dynamicFibList !! fromIntegral(x-1)) + (dynamicFibList !! fromIntegral(x-2)) | x <- [2..n]]
 
 
 -------------------------------- Fibonacci infinite version --------------------------------
@@ -31,10 +29,10 @@ fibRecBN (True, bn)  = somaBN (fibRecBN (subBN (True, bn) (True, [1])) ) (fibRec
 
 --
 
--- dynamicFibListBN = (True, [0]) : (True, [1]) : [ n | x <- [2..], let n = ((dynamicFibListBN !! (x-1)) + (dynamicFibListBN !! (x-2)))]
---
--- fibListaBN :: BigNumber -> BigNumber
--- fibListaBN n = select n dynamicFibListBN
+fibListaBN :: BigNumber -> BigNumber
+fibListaBN n = select n dynamicFibListBN
+            where dynamicFibListBN = (True, [0]) : (True, [1]) : [ somaBN (select (subBN x (True, [1])) dynamicFibListBN) (select (subBN x (True, [2])) dynamicFibListBN) | x <- rangeBn ]
+                  rangeBn = iterateBn (somaBN (True, [1])) (True, [2]) (somaBN n (True, [1]))
 
 --
 infiniteFibListBN = (True, [0]) : (True, [1]) : zipWith (somaBN) infiniteFibListBN (tail infiniteFibListBN)
@@ -46,3 +44,7 @@ fibListaInfinitaBN n = select n infiniteFibListBN
 select :: BigNumber -> [BigNumber] -> BigNumber
 select (True,[0]) xs = head xs
 select bn (x:xs)     = select (subBN bn (True, [1])) xs
+
+iterateBn :: (BigNumber -> BigNumber) -> BigNumber -> BigNumber  -> [BigNumber]
+iterateBn f a limit | a /= limit = a : iterateBn f (f a) limit
+                    | otherwise = []
