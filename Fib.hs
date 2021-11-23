@@ -30,8 +30,8 @@ fibRecBN (True, bn)  = somaBN (fibRecBN (subBN (True, bn) (True, [1])) ) (fibRec
 
 fibListaBN :: BigNumber -> BigNumber
 fibListaBN n = select n dynamicFibListBN
-            where dynamicFibListBN = (True, [0]) : (True, [1]) : [ somaBN (select (subBN x (True, [1])) dynamicFibListBN) (select (subBN x (True, [2])) dynamicFibListBN) | x <- rangeBn ]
-                  rangeBn = iterateBn (somaBN (True, [1])) (True, [2]) (somaBN n (True, [1]))
+            where dynamicFibListBN = (True, [0]) : (True, [1]) : [ somaBN (select (subBN x (True, [1])) dynamicFibListBN) (select (subBN x (True, [2])) dynamicFibListBN) | x <- rangeBN ]
+                  rangeBN = iterateBN (somaBN (True, [1])) (True, [2]) (somaBN n (True, [1]))
 
 -------------------------------- Fibonacci infinite version using BigNumber ---------------
 
@@ -47,6 +47,6 @@ select (True,[0]) xs = head xs
 select bn (x:xs)     = select (subBN bn (True, [1])) xs
 
 -- Apply a function to a BigNumber until a certain limit, returning the results in a list
-iterateBn :: (BigNumber -> BigNumber) -> BigNumber -> BigNumber  -> [BigNumber]
-iterateBn f a limit | a /= limit = a : iterateBn f (f a) limit
+iterateBN :: (BigNumber -> BigNumber) -> BigNumber -> BigNumber  -> [BigNumber]
+iterateBN f a limit | a /= limit = a : iterateBN f (f a) limit
                     | otherwise = []
