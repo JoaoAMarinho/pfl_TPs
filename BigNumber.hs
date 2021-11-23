@@ -70,7 +70,6 @@ Receives three parameters
   - a parameter to hold the carry that resulted from the sum
 Returns a list with the result
 -}
-
 auxSoma :: [Int] -> [Int] -> Int -> [Int]
 auxSoma [] [] carry     = if (carry == 0) then [] else [carry]
 auxSoma (x:xs) [] carry = [mod (x + carry) 10] ++ auxSoma xs [] (div (x + carry) 10)
@@ -80,13 +79,11 @@ auxSoma (x:xs) (y:ys) carry | res > 9   = [mod res 10] ++ auxSoma xs ys carry_
                             where res    = x + y + carry
                                   carry_ = div res 10
 
-
 {-
 Auxiliary recursive function for subtraction
-Receives three parameters
-    - two lists corresponding to the numbers to be subtracted
-    - a parameter to hold the carry that resulted from the subtraction
-Returns a list with the result
+Receives - two lists corresponding to the numbers to be subtracted
+         - a parameter to hold the carry that resulted from the subtraction
+Returns - a list with the result
 -}
 auxSub :: [Int] -> [Int] -> Int -> [Int]
 auxSub [] [] _             = []
@@ -97,13 +94,36 @@ auxSub (x:xs) ys carry | res > x   = [x + 10 - res] ++ auxSub xs ys_ 1
                        where res = if (ys == []) then carry else (head ys + carry)
                              ys_ = if (ys == []) then [] else (tail ys)
 
-
--- Auxiliary function for multiplication
+{-
+Auxiliary function for multiplication using foldl
+Receives - two lists corresponding to the numbers to be multiplied
+Returns - a list with the result
+This function calls another auxiliar function - scaleBN - responsible for calculating each 'sub-multiplication'
+-}
 auxMul :: [Int] -> [Int] -> [Int]
 auxMul xs ys = foldl (\x (y,i) -> auxSoma x ((take i (repeat 0)) ++ y) 0) [] (zip [scaleBN x ys 0 | x <- xs] [0,1..])
 
+{-
+Auxiliary recursive function for multiplication
+Receives - a scalar
+         - a list to be scaled
+         - a parameter to hold the carry that resulted from the scaling
+Returns - a list with the result
+-}
+scaleBN :: Int -> [Int] -> Int -> [Int]
+scaleBN s [] carry     = if (carry == 0) then [] else [carry]
+scaleBN s (x:xs) carry = [res] ++ scaleBN s xs carry_
+                         where res    = mod (s * x + carry) 10
+                               carry_ = div (s * x + carry) 10
 
--- Auxiliary function for division
+{-
+Auxiliary recursive function for division
+Receives - two lists corresponding to the numbers to be divided
+         - a list to hold the possible dividend (e.g 250 / 15 - a first possible dividend would be 25, and so on)
+         - a list to hold the quotient
+Returns - a tuple with the first element as the remainder and the second as the result
+This function calls another auxiliar function - subUntil - responsible for calculating each 'sub-division'
+-}
 auxDiv :: [Int] -> [Int] -> [Int] -> [Int] -> ([Int], [Int])
 auxDiv [] _ resto quociente = (dropWhile (==0) quociente, resto)
 auxDiv (x:xs) divisor dividendo quociente | dividendo_ == divisor    = auxDiv xs divisor [] (quociente ++ [1])
@@ -112,8 +132,13 @@ auxDiv (x:xs) divisor dividendo quociente | dividendo_ == divisor    = auxDiv xs
                                           where dividendo_ = (dropWhile (==0) dividendo) ++ [x]
                                                 res        = subUntil dividendo_ divisor 0
 
-
--- Subtract two lists representing a number, returning the remainder and the number of subtracions
+{-
+Auxiliary recursive function for division
+Receives - two lists corresponding to the numbers to be divided
+         - a counter to hold the number of times the second argument could be subtracted to the first one
+Returns - a tuple with the first element as the remainder and the second as the quocient (i.e. the value held by the counter)
+This functions acts similarly to the scaleBN function, in the sense that, given a minimal possible dividend and a divisor, it calculates the sub-quocient
+-}
 subUntil :: [Int] -> [Int] -> Int -> ([Int], Int)
 subUntil dividendo divisor i | dividendo == divisor    = ([0], i+1)
                              | maior dividendo divisor = subUntil (reverse (auxSub rdividendo rdivisor 0)) divisor (i + 1)
@@ -121,16 +146,11 @@ subUntil dividendo divisor i | dividendo == divisor    = ([0], i+1)
                              where rdividendo = (reverse dividendo)
                                    rdivisor   = (reverse divisor)
 
-
--- Multiplies a list representing a number by a scalar
-scaleBN :: Int -> [Int] -> Int -> [Int]
-scaleBN s [] carry     = if (carry == 0) then [] else [carry]
-scaleBN s (x:xs) carry = [res] ++ scaleBN s xs carry_
-                         where res    = mod (s * x + carry) 10
-                               carry_ = div (s * x + carry) 10
-
-
--- Checks if the first list representing a number is bigger than the second
+{-
+Auxiliary function that determines if the number represented by the first list is bigger than the number represented by the second
+Receives - two lists corresponding to the numbers to be compared
+Returns - true if the first one is bigger than the second one, false otherwise
+-}
 maior :: [Int] -> [Int] -> Bool
 maior [] [] = False
 maior (x:xs) (y:ys) | length (x:xs) > length (y:ys) = True
