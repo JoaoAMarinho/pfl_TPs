@@ -2,10 +2,20 @@
 
 Para analisar o maior número que cada função aceita como argumento, foi estabelecido um _timeout_ de 1 minuto.
 
-|           | Recursão | Programação dinâmica | Lista Infinita |   
-|-----------|----------|----------------------|----------------|
-| Integer   |36        |62303                 |                |   
-| BigNumber |          |                      |                |   
+|           | Recursão | Programação dinâmica | Lista Infinita |
+| --------- | -------- | -------------------- | -------------- |
+| Integer   | 36       | 62303                | 1000000        |
+| BigNumber | 32       | 2275                 | 20000          |
+
+Um Integer pode representar um número inteiro arbitrariamente grande, dependendo da capacidade de armazenamento da máquina.
+
+Um Int apenas consegue representar inteiros representáveis por 32 ou 64 bits, dependendo do sistema operativo.
+
+Não foram mostrados quaisquer resultados para o maior número que cada função aceita como argumento usando tipo Int, dado que esse argumento corresponderia ao índice do maior número da sequência de Fibonnaci representável por um valor desse tipo (de notar, no entanto, que, considerando o _timeout_, esse número poderia não ser obtido em tempo útil).
+
+No entanto, as operações realizadas usando tipo Integer sofrem de uma maior latência relativamente às realizadas usando tipo Int. Portanto, dado que os testes foram realizados considerando um _timeout_, é provável que os resultados obtidos não correspondam ao maior número representável por esse tipo de dados, mas sim ao maior número calculável em tempo útil.
+
+Em relação aos testes realizados usando tipo BigNumber, era previsível que o resultado fosse menor, dado que as operações poderão ser mais lentas.
 
 # BigNumber - casos de teste
 
@@ -17,7 +27,7 @@ output (somaBN (scanner "123") (scanner "-123"))
 
 output (somaBN (scanner "0") (scanner "12"))
 > "12"
- 
+
 output (somaBN (scanner "9") (scanner "9"))
 > "18"
 
@@ -128,6 +138,7 @@ output resto
 ```
 
 ## safeDivBN
+
 ```haskell
 safeDivBN (scanner "18905622") (scanner "19724")
 > Just ((True, [9,5,8]),(True, [1,0,0,3,0]))
@@ -135,3 +146,4 @@ safeDivBN (scanner "18905622") (scanner "19724")
 safeDivBN (scanner "18905622") (scanner "0")
 > Nothing
 ```
+
