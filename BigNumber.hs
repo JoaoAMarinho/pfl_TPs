@@ -1,4 +1,4 @@
-module BigNumber(BigNumber, somaBN, subBN, mulBN, divBN, safeDivBN) where
+module BigNumber(BigNumber, scanner, output, somaBN, subBN, mulBN, divBN, safeDivBN) where
 import Data.Char
 
 --BigNumber definition
@@ -65,25 +65,28 @@ safeDivBN bn1 bn2      = Just (divBN bn1 bn2) -- Divison by a number not zero
 
 {-
 Auxiliary recursive function for sum
-Receives three parameters
-  - two lists corresponding to the numbers to be summed
-  - a parameter to hold the carry that resulted from the sum
-Returns a list with the result
+Receives:
+        - two lists corresponding to the numbers to be summed
+        - a parameter to hold the carry that results from the sum
+Returns:
+        - a list with the result
 -}
 auxSoma :: [Int] -> [Int] -> Int -> [Int]
-auxSoma [] [] carry     = if (carry == 0) then [] else [carry]
-auxSoma (x:xs) [] carry = [mod (x + carry) 10] ++ auxSoma xs [] (div (x + carry) 10)
-auxSoma [] (y:ys) carry = [mod (y + carry) 10] ++ auxSoma [] ys (div (y + carry) 10)
-auxSoma (x:xs) (y:ys) carry | res > 9   = [mod res 10] ++ auxSoma xs ys carry_
-                            | otherwise = [res] ++ auxSoma xs ys 0
+auxSoma [] [] carry     = if (carry == 0) then [] else [carry]                       -- sum of 2 empty lists
+auxSoma (x:xs) [] carry = [mod (x + carry) 10] ++ auxSoma xs [] (div (x + carry) 10) -- sum of a list with an empty list
+auxSoma [] (y:ys) carry = [mod (y + carry) 10] ++ auxSoma [] ys (div (y + carry) 10) -- sum of a list with an empty list
+auxSoma (x:xs) (y:ys) carry | res > 9   = [mod res 10] ++ auxSoma xs ys carry_       -- in case the sum of the values exceeds 9
+                            | otherwise = [res] ++ auxSoma xs ys 0                   -- save the sum result and continue the operation
                             where res    = x + y + carry
                                   carry_ = div res 10
 
 {-
 Auxiliary recursive function for subtraction
-Receives - two lists corresponding to the numbers to be subtracted
+Receives:
+         - two lists corresponding to the numbers to be subtracted
          - a parameter to hold the carry that resulted from the subtraction
-Returns - a list with the result
+Returns:
+         - a list with the result
 -}
 auxSub :: [Int] -> [Int] -> Int -> [Int]
 auxSub [] [] _             = []
@@ -96,19 +99,23 @@ auxSub (x:xs) ys carry | res > x   = [x + 10 - res] ++ auxSub xs ys_ 1
 
 {-
 Auxiliary function for multiplication using foldl
-Receives - two lists corresponding to the numbers to be multiplied
-Returns - a list with the result
+Receives:
+         - two lists corresponding to the numbers to be multiplied
+Returns:
+         - a list with the result
 This function calls another auxiliar function - scaleBN - responsible for calculating each 'sub-multiplication'
 -}
 auxMul :: [Int] -> [Int] -> [Int]
-auxMul xs ys = foldl (\x (y,i) -> auxSoma x ((take i (repeat 0)) ++ y) 0) [] (zip [scaleBN x ys 0 | x <- xs] [0,1..])
+auxMul xs ys = foldl (\x (y,i) -> auxSoma x ((take i (repeat 0)) ++ y) 0) [] (zip [scaleBN x ys 0 | x <- xs] [0,1..]) -- sum of the partial results of the scaling operation on the digits in number1 with number2
 
 {-
 Auxiliary recursive function for multiplication
-Receives - a scalar
+Receives:
+         - a scalar
          - a list to be scaled
-         - a parameter to hold the carry that resulted from the scaling
-Returns - a list with the result
+         - a parameter to hold the carry that results from the scaling
+Returns:
+         - a list with the result
 -}
 scaleBN :: Int -> [Int] -> Int -> [Int]
 scaleBN s [] carry     = if (carry == 0) then [] else [carry]
@@ -118,43 +125,49 @@ scaleBN s (x:xs) carry = [res] ++ scaleBN s xs carry_
 
 {-
 Auxiliary recursive function for division
-Receives - two lists corresponding to the numbers to be divided
+Receives:-
+         - two lists corresponding to the numbers to be divided
          - a list to hold the possible dividend (e.g 250 / 15 - a first possible dividend would be 25, and so on)
          - a list to hold the quotient
-Returns - a tuple with the first element as the remainder and the second as the result
+Returns:
+         - a tuple with the first element as the result and the second as the remainder
 This function calls another auxiliar function - subUntil - responsible for calculating each 'sub-division'
 -}
 auxDiv :: [Int] -> [Int] -> [Int] -> [Int] -> ([Int], [Int])
-auxDiv [] _ resto quociente = (dropWhile (==0) quociente, resto)
-auxDiv (x:xs) divisor dividendo quociente | dividendo_ == divisor    = auxDiv xs divisor [] (quociente ++ [1])
-                                          | maior dividendo_ divisor = auxDiv xs divisor (fst res) (quociente ++ [snd res])
-                                          | otherwise                = auxDiv xs divisor dividendo_ (quociente ++ [0])
+auxDiv [] _ resto quociente = (dropWhile (==0) quociente, resto)                                                            -- remove the starting zeros from the quocient and return the result
+auxDiv (x:xs) divisor dividendo quociente | dividendo_ == divisor    = auxDiv xs divisor [] (quociente ++ [1])              -- new dividendo equals the divisor so there is no remainder and the quocient grows
+                                          | maior dividendo_ divisor = auxDiv xs divisor (fst res) (quociente ++ [snd res]) -- new dividendo is greater than divisor so we call the auxiliary subUntil function
+                                          | otherwise                = auxDiv xs divisor dividendo_ (quociente ++ [0])      -- we can not divide the current dividendo by the divisor so we keep the division
                                           where dividendo_ = (dropWhile (==0) dividendo) ++ [x]
                                                 res        = subUntil dividendo_ divisor 0
 
 {-
 Auxiliary recursive function for division
-Receives - two lists corresponding to the numbers to be divided
-         - a counter to hold the number of times the second argument could be subtracted to the first one
-Returns - a tuple with the first element as the remainder and the second as the quocient (i.e. the value held by the counter)
+Receives:
+         - two lists corresponding to the numbers to be divided
+         - a counter to hold the number of times the second argument was subtracted to the first one
+Returns:
+         - a tuple with the first element as the remainder and the second as the quocient (i.e. the value held by the counter)
 This functions acts similarly to the scaleBN function, in the sense that, given a minimal possible dividend and a divisor, it calculates the sub-quocient
 -}
 subUntil :: [Int] -> [Int] -> Int -> ([Int], Int)
-subUntil dividendo divisor i | dividendo == divisor    = ([0], i+1)
-                             | maior dividendo divisor = subUntil (reverse (auxSub rdividendo rdivisor 0)) divisor (i + 1)
-                             | otherwise               = (dividendo, i)
+subUntil dividendo divisor i | dividendo == divisor    = ([0], i+1)     -- numbers are the same so the remainder is 0 and the quocient is increased
+                             | maior dividendo divisor = subUntil (reverse (auxSub rdividendo rdivisor 0)) divisor (i + 1) -- retry the function after subtraction
+                             | otherwise               = (dividendo, i) -- not possible to subtract anymore
                              where rdividendo = (reverse dividendo)
                                    rdivisor   = (reverse divisor)
 
 {-
 Auxiliary function that determines if the number represented by the first list is bigger than the number represented by the second
-Receives - two lists corresponding to the numbers to be compared
-Returns - true if the first one is bigger than the second one, false otherwise
+Receives:
+         - two lists corresponding to the numbers to be compared
+Returns:
+         - true if the first one is bigger than the second, false otherwise
 -}
 maior :: [Int] -> [Int] -> Bool
 maior [] [] = False
-maior (x:xs) (y:ys) | length (x:xs) > length (y:ys) = True
-                    | length (y:ys) > length (x:xs) = False
-                    | x > y                         = True
-                    | y > x                         = False
-                    | otherwise                     = maior xs ys
+maior (x:xs) (y:ys) | length (x:xs) > length (y:ys) = True        -- number1 length bigger than number2
+                    | length (y:ys) > length (x:xs) = False       -- number2 length bigger than number1
+                    | x > y                         = True        -- value in number1 greater than in number2
+                    | y > x                         = False       -- value in number2 greater than in number1
+                    | otherwise                     = maior xs ys -- retry the function with the rest of the numbers
