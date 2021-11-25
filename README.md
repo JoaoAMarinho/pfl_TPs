@@ -17,6 +17,8 @@ No entanto, as operações realizadas usando tipo Integer sofrem de uma maior la
 
 Em relação aos testes realizados usando tipo BigNumber, era previsível que o resultado fosse menor, dado que as operações poderão ser mais lentas.
 
+Para além disso, considerando o mesmo tipo de dados, há que realçar a diferença na eficiência das diferentes implementações, com as listas infinitas ofericadas pela linguagem _Haskell_ a ganhar indubitavelmente, e por uma margem significativa, em termos de eficiência.
+
 # BigNumber - casos de teste
 
 ## somaBN
@@ -147,3 +149,6 @@ safeDivBN (scanner "18905622") (scanner "0")
 > Nothing
 ```
 
+
+> ### Nota
+> Não foram feitas quaisquer descrições do funcionamento das funções implementadas neste trabalho prático, uma vez que consideramos que estas se encontram devidamente  documentadas e explicadas nos respetivos documentos.
