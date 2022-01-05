@@ -1,0 +1,40 @@
+Features:
+    4 Menus:
+        Welcome Menu (Player Vs Player, Player Vs Bot, Instructions)
+        Instructions Menu
+        Bot difficulty (Easy, Hard)
+        Game Menu
+    
+    Board:
+        X, Y coords: Letters, Numbers
+        ninja representation:
+        samurai representation:
+    
+    Input:
+        ex: A1/G2 (Curr pos/New pos)
+        ex: a1/g2 e variantes.
+Files:
+
+Menu Flow
+Game Flow
+Moves
+Specific prints
+Input validator
+
+Type of char function
+
+type_of_character(Ch, Type) :-
+Ch >= 'a', Ch =< 'z',
+!,
+Type = lowercase.
+type_of_character(Ch, Type) :-
+Ch >= 'A', Ch =< 'Z',
+!,
+Type = uppercase.
+type_of_character(Ch, Type) :-
+Ch >= '0', Ch =< '9',
+!,
+Type = digit.
+type_of_character(_Ch, Type) :-
+Type = other.
+
