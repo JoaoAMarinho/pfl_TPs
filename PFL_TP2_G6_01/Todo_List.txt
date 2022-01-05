@@ -6,9 +6,11 @@ Features:
         Game Menu
     
     Board:
+        blocos 11x5
+        
         X, Y coords: Letters, Numbers
-        ninja representation:
-        samurai representation:
+        ninja representation:    
+        samurai representation:  
     
     Input:
         ex: A1/G2 (Curr pos/New pos)
