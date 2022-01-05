@@ -1,4 +1,5 @@
 :-use_module(library(lists)).
+:-use_module(library(between)).
 
 % builds the board with the pieces in the correct places
 buildBoard(B) :- B = [
@@ -15,14 +16,14 @@ buildBoard(B) :- B = [
 printBoard([Row]):-
     nl,
     printRow(Row),
-    nl.
+    nl,!.
 printBoard([Row|List]):-
     nl,
     printRow(Row),
     printBoard(List).
 
 printRow([Piece]):-
-    printPiece(Piece).
+    printPiece(Piece),!.
 
 printRow([Piece|List]):-
     printPiece(Piece),
@@ -119,32 +120,26 @@ getPositions(Type, Board, X, Y, [Vector|List], Positions, NewPositions):-
     append(Result, Positions, CurrPositions),
     getPositions(Type, Board, X, Y, List, CurrPositions, NewPositions).
 
-% irrelevant vectors
-getPositions(_, _, _, _, [_], Positions, Positions).
-
-getPositions(Type, Board, X, Y, [_|T], Positions, NewPositions):-
-    getPositions(Type, Board, X, Y, T, Positions, NewPositions).
-
 % return a list with possible board positions by following a given vector
 getPositionsForVector(Type, Board, X, Y, (Vx, Vy), Positions, Result):-     % find empty space, continue search
     Nx is X+Vx,
     Ny is Y+Vy,
     nth1(Ny, Board, Row),
-    nth1(Nx, Row, piece(empty)),
+    nth1(Nx, Row, piece(empty)),!,
     append([(Nx, Ny)], Positions, NewPositions),
     getPositionsForVector(Type, Board, Nx, Ny, (Vx,Vy), NewPositions, Result).
 
 getPositionsForVector(_, _, X, Y, (Vx,Vy), Positions, Positions):-          % handle out of board
     Nx is X+Vx,
     Ny is Y+Vy,
-    outOfBounds(Nx,Ny).
+    outOfBounds(Nx,Ny), !.
 
 getPositionsForVector(Type, Board, X, Y, (Vx, Vy), Positions, Positions):-  % find opponent piece, stop search
     Nx is X+Vx,
     Ny is Y+Vy,
     opponent(Type, Opponent),
     nth1(Ny, Board, Row),
-    nth1(Nx, Row, piece(Opponent)).
+    nth1(Nx, Row, piece(Opponent)), !.
 
 getPositionsForVector(Type, Board, X, Y, (Vx, Vy), Positions, Result):-     % find friendly piece, continue search until opponent piece
     Nx is X+Vx,
@@ -158,19 +153,19 @@ getOpponentPiece(Type, Board, X, Y, (Vx, Vy), Positions, Result):-          % fi
     Nx is X+Vx,
     Ny is Y+Vy,
     nth1(Ny, Board, Row),
-    nth1(Nx, Row, piece(empty)),
+    nth1(Nx, Row, piece(empty)),!,
     getOpponentPiece(Type, Board, Nx, Ny, (Vx,Vy), Positions, Result).
 
 getOpponentPiece(_, _, X, Y, (Vx,Vy), Positions, Positions):-               % handle out of board
     Nx is X+Vx,
     Ny is Y+Vy,
-    outOfBounds(Nx,Ny).
+    outOfBounds(Nx,Ny),!.
 
 getOpponentPiece(Type, Board, X, Y, (Vx, Vy), Positions, Positions):-       % find friendly piece, stop search
     Nx is X+Vx,
     Ny is Y+Vy,
     nth1(Ny, Board, Row),
-    nth1(Nx, Row, piece(Type)).
+    nth1(Nx, Row, piece(Type)),!.
 
 getOpponentPiece(Type, Board, X, Y, (Vx, Vy), Positions, Result):-          % find opponent piece, add position and stop search
     Nx is X+Vx,
@@ -187,7 +182,7 @@ movePiece(Type, Board, X, Y, Nx, Ny, NewBoard, Player1Points, NewPlayer1Points):
     replace(Y, NewRow1, Board, MiddleBoard),
     opponent(Type, Opponent),
     nth1(Ny, MiddleBoard, Row2),
-    nth1(Nx, Row2, piece(Opponent)),
+    nth1(Nx, Row2, piece(Opponent)),!,
     replace(Nx, piece(Type), Row2, NewRow2),
     replace(Ny, NewRow2, MiddleBoard, NewBoard),
     NewPlayer1Points is Player1Points+1.
@@ -209,7 +204,5 @@ replace(I, R, [H1|T1], [H1|T2]) :-
 
 % checks if position is out of bounds
 outOfBounds(X, Y):-
-    X > 8;
-    X < 1;
-    Y > 8;
-    Y < 1.
+    \+between(1, 8, X);
+    \+between(1, 8, Y).
