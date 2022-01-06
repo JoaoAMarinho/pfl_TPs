@@ -1,9 +1,4 @@
 Features:
-    4 Menus:
-        Welcome Menu (Player Vs Player, Player Vs Bot, Instructions)
-        Instructions Menu
-        Bot difficulty (Easy, Hard)
-        Game Menu
     
     Board:
         blocos 11x5
@@ -13,15 +8,13 @@ Features:
         samurai representation:  
     
     Input:
-        Menus - Read single digit between two values (followed by \n)
         Game  - Read (single char between)(single digit between)(space or /)(single char between)(single digit between)(\n)
 
-        Specifics - Read specific char, read single char/digit between, read digit followed by \n (same as read digit between and \n)
+        Specifics - Read specific char, read single char/digit between
         ex: A1/G2 (Curr pos/New pos)
         ex: a1/g2 e variantes.
 Files:
 
-Menu Flow
 Game Flow
 Moves
 Specific prints

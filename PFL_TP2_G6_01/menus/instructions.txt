@@ -1,0 +1,35 @@
+     +-----------------------------------------------------------------------------------------------------+
+     |                                                                                                     |
+     |                                                                                                     |
+     |                       ___           _                   _   _                                       |
+     |                      |_ _|_ __  ___| |_ _ __ _   _  ___| |_(_) ___  _ __  ___                       |
+     |                       | || '_ \/ __| __| '__| | | |/ __| __| |/ _ \| '_ \/ __|                      |
+     |                       | || | | \__ \ |_| |  | |_| | (__| |_| | (_) | | | \__ \                      |
+     |                      |___|_| |_|___/\__|_|   \__,_|\___|\__|_|\___/|_| |_|___/                      |
+     |                                                                                                     |
+     |                                                                                                     |
+     |                                                                                                     |
+     |                   In Japanese, the word "Shi" can mean, depending on the context,                   |
+     |                   either "the number four" or "death." That is why in Japan 4 is                    |
+     |                   considered an unlucky number in much the same way 13 is in the                    |
+     |                   West.                                                                             |
+     |                                                                                                     |
+     |                   Object: A player loses if reduced to 4 pieces.                                    |
+     |                                                                                                     |
+     |                   Samurais vs. Ninjas. Samurais go first.                                           |
+     |                                                                                                     |
+     |                   Pieces slide like a Chess Queen. There are 8 pieces per side,                     |
+     |                   set up on the players first row.                                                  |
+     |                                                                                                     |
+     |                   Jump Attack: Captures of enemies can only be made by jumping                      |
+     |                   over a single, friendly piece along the path of attack. Any                       |
+     |                   number of unoccupied spaces, including none, may exist between                    |
+     |                   the attacking piece, the piece being jumped, and the piece to                     |
+     |                   be captured. This is much like the attack of the Cannon piece                     |
+     |                   in Chinese Chess. Except here the intervening "screen" must be                    |
+     |                   a friendly piece and never an enemy.                                              |
+     |                                                                                                     |
+     |                                     (Press enter to go back)                                        |
+     |                                                                                                     |
+     |                                                                                                     |
+     +-----------------------------------------------------------------------------------------------------+

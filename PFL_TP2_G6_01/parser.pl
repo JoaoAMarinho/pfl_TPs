@@ -9,76 +9,33 @@ read_specific_char(Value):-
     Value == Char.
 
 read_specific_char(Value):-
-    skip_line, write('Invalid input!\n'), fail.
-/*
-* Read number between 2 values: 
-* read_number_between(+Min, +Max, -Value).
-*/
-read_number_between(Min, Max, Value):-
-    read_number(Value),
-    \+between(Min, Max, Value),
-    write('Invalid number!\n'), fail.
-
-read_number_between(Min, Max, Value):-
-    repeat,
-    read_number(Value),
-    between(Min, Max, Value).
-
-/*
-* Read number from input stream: 
-* read_number(-Value).
-*/
-read_number(Value):-read_number(Value, 0).
-
-read_number(Value, Value):-
-    peek_code(10),
-    !,skip_line.
-
-read_number(_, _):-
-    peek_code(Value),
-    \+between(48, 57, Value), !, skip_line,
-    write('Invalid character!\n'), fail.
-
-read_number(Value, Prev):-
-    get_code(Ascii),
-    between(48, 57, Ascii), !,
-    char_code('0', AsciiZero),
-    Num is Ascii - AsciiZero,
-    Next is Prev * 10 + Num,
-    read_number(Value, Next).
+    skip_line, 
+    write('Invalid input!\n'), fail.
 
 /*
 * Read digit between 2 values: 
 * read_digit_between(+Min, +Max, -Value).
 */
 read_digit_between(Min, Max, Value):-
-    read_digit(Value),
-    \+between(Min, Max, Value),
-    write('Invalid number!\n'), fail.
+    read_digit(X),
+    between(Min, Max, X),!,
+    Value is X.
 
-read_digit_between(Min, Max, Value):-
-    repeat,
-    read_digit(Value),
-    between(Min, Max, Value).
-
+read_digit_between(_, _, _):-
+    skip_line, 
+    write('Invalid input!\n'), fail.    
 /*
 * Read digit from input stream: 
 * read_digit(-Value).
 */
 read_digit(_):-
     peek_code(Value),
-    \+between(48, 57, Value), !, skip_line,
-    write('Invalid character!\n'), fail.
+    \+between(48, 57, Value), !, fail.
 
 read_digit(Value):-
     get_code(Ascii),
-    between(48, 57, Ascii),
     char_code('0', AsciiZero),
-    Value is Ascii - AsciiZero,
-    peek_code(10),
-    !,skip_line.
-
-read_digit(Value):- skip_line, Value is -1.
+    Value is Ascii - AsciiZero.
 
 /*
 * Read alphabetic char from input stream (returns uppercase value): 
@@ -97,7 +54,7 @@ read_alpha_char(Value):- % Lowercase Character
     UppercaseCode is Code - 32,
     char_code(Value, UppercaseCode).
 
-read_alpha_char(Value):-
+read_alpha_char(_):-
     write('Invalid character!\n'),
     skip_line, fail.
 
