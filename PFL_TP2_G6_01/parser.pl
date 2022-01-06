@@ -1,6 +1,16 @@
 :-use_module(library(between)).
 
 /*
+* Tries to read a specific char: 
+* read_specific_char(+Value).
+*/
+read_specific_char(Value):-
+    get_char(Char),
+    Value == Char.
+
+read_specific_char(Value):-
+    skip_line, write('Invalid input!\n'), fail.
+/*
 * Read number between 2 values: 
 * read_number_between(+Min, +Max, -Value).
 */
@@ -69,6 +79,51 @@ read_digit(Value):-
     !,skip_line.
 
 read_digit(Value):- skip_line, Value is -1.
+
+/*
+* Read alphabetic char from input stream (returns uppercase value): 
+* read_alpha_char(-Value).
+*/
+read_alpha_char(Value):- % Uppercase Character
+    peek_code(CodePeek),
+    between(65, 90, CodePeek), !,
+    get_code(Code),
+    char_code(Value, Code).
+
+read_alpha_char(Value):- % Lowercase Character
+    peek_code(CodePeek),
+    between(97, 122, CodePeek), !,
+    get_code(Code),
+    UppercaseCode is Code - 32,
+    char_code(Value, UppercaseCode).
+
+read_alpha_char(Value):-
+    write('Invalid character!\n'),
+    skip_line, fail.
+
+/*
+* Convert alphabetic char to int starting from 'A': 
+* char_to_int(+Char, -Int).
+*/
+char_to_int(Char, Int):-
+    char_code(Char, Code),
+    Int is Code-64.
+
+/*
+* Reads alphabetic char from input stream and
+* converts to int:
+* getXCord(-Value).
+*/
+getXCord(Value):-
+    read_alpha_char(Char),
+    char_to_int(Char, Value).
+
+/*
+* Validates if Value is in board bounds:
+* inBounds(+Value).
+*/
+inBounds(Value):-
+    between(1,8, Value).
 
 type_of_character(Ch, Type):-
     Ch >= 'a', Ch =< 'z',!,
