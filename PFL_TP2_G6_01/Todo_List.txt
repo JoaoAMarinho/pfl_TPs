@@ -13,6 +13,10 @@ Features:
         samurai representation:  
     
     Input:
+        Menus - Read single digit between two values (followed by \n)
+        Game  - Read (single char between)(single digit between)(space or /)(single char between)(single digit between)(\n)
+
+        Specifics - Read specific char, read single char/digit between, read digit followed by \n (same as read digit between and \n)
         ex: A1/G2 (Curr pos/New pos)
         ex: a1/g2 e variantes.
 Files:
