@@ -1,6 +1,5 @@
 % Includes
 %:- [main].
-:- [parser].
 
 welcome_menu_path(X):- X = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6_01/PFL_TP2_G6_01/menus/welcome_menu.txt'. 
 instructions_path(X):- X = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6_01/PFL_TP2_G6_01/menus/instructions.txt'. 
