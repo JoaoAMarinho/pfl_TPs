@@ -95,10 +95,12 @@ get_y_cord(Value):-
 */
 read_move(X, Y, Nx, Ny):-
     get_x_cord(X),
-    get_y_cord(Y),
+    get_y_cord(YRead),
+    Y is 9 - YRead,
     read_specific_char('-'),
     get_x_cord(Nx),
-    get_y_cord(Ny),
+    get_y_cord(NyRead),
+    Ny is 9 - NyRead,
     read_specific_char('\n').
 /*
 * Validates if Value is in board bounds:

@@ -24,10 +24,20 @@ opponent(samurai, ninja).
 opponent(ninja, samurai).
 
 /*
-* Game handler 
+* Validates if a piece is in the given board at the specified coords: 
+* piece_in_board(+Board, +Type, +X, +Y).
+*/
+piece_in_board(Board, Type, X, Y):-
+    nth1(Y, Board, Row),
+    \+nth1(X, Row, piece(Type)), !,
+    write('Incorrect position!\n'), fail.
+
+piece_in_board(Board, Type, X, Y).
+
+/*
+* Game handler:
 * play_game(+playerTurn, +Board, +Player1Points, +Player2Points).
 */
-
 play_game(_, _, Points1, _):- % check if game has ended
     Points1 == 4,
     write('\nSamurais WON!\n').
@@ -41,8 +51,7 @@ play_game(samurai, Board, Player1Points, Player2Points):- % play piece according
     write('\nSamurais turn\n'),
     repeat,
     read_move(X, Y, Nx, Ny),
-    nth1(Y, Board, Row),
-    nth1(X, Row, piece(samurai)), % pick correct piece
+    piece_in_board(Board, samurai, X, Y),
     valid_piece_move(samurai, Board, X, Y, Nx, Ny),!,
     move_piece(samurai, Board, X, Y, Nx, Ny, NewBoard, Player1Points, NewPlayer1Points),
     play_game(ninja, NewBoard, NewPlayer1Points, Player2Points).
@@ -52,8 +61,7 @@ play_game(ninja, Board, Player1Points, Player2Points):- % play piece according t
     write('\nNinjas turn\n'),
     repeat,
     read_move(X, Y, Nx, Ny),
-    nth1(Y, Board, Row),
-    nth1(X, Row, piece(ninja)), % pick correct piece
+    piece_in_board(Board, ninja, X, Y),
     valid_piece_move(ninja, Board, X, Y, Nx, Ny),!,
     move_piece(ninja, Board, X, Y, Nx, Ny, NewBoard, Player2Points, NewPlayer2Points),
     play_game(samurai, NewBoard, Player1Points, NewPlayer2Points).
@@ -70,7 +78,10 @@ piece_directions(X) :- X = [(-1,-1),(-1,0),(0,-1),(-1,1),(1,-1),(0,1),(1,0),(1,1
 valid_piece_move(Type, Board, X, Y, Nx, Ny):-
     piece_directions(Vectors),
     get_positions(Type, Board, X, Y, Vectors, [], Positions),
-    member((Nx,Ny), Positions).
+    \+member((Nx,Ny), Positions), !,
+    write('Invalid move!\n'), fail.
+
+valid_piece_move(Type, Board, X, Y, Nx, Ny).
 
 % return a list with possible board positions for piece
 get_positions(Type, Board, X, Y, [Vector], Positions, NewPositions) :-

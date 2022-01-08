@@ -1,7 +1,10 @@
 
 letters_path(Path):- Path = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6_01/PFL_TP2_G6_01/assets/board_letters.txt'. 
 
-% print current board status
+/*
+* Prints the board given by Board:
+* print_board(+Board).
+*/ 
 print_board(Board):-
     clear_screen,
     print_top_bar,
@@ -9,7 +12,7 @@ print_board(Board):-
     print_letters.
 
 /*
-* Prints top bar (i.e. the first line) of the board:
+* Prints the top bar (i.e. the first line) of the board:
 * print_top_bar.
 */ 
 print_top_bar:-
@@ -31,11 +34,11 @@ print_letters:-
 print_rows(Board):-
     print_rows(Board, 8).
 
-print_row([Row], Index):-
+print_rows([Row], Index):-
     print_lines(Row, Index), !.
 
 print_rows([Row|List], Index):-
-    print_row(Row, Index),
+    print_lines(Row, Index), nl,
     NextIndex is Index - 1,
     print_rows(List, NextIndex).
     
@@ -48,7 +51,7 @@ print_lines(Row, RowIndex):-
     print_line(Row, RowIndex, 4), nl,
     print_line(Row, RowIndex, 3), nl,
     print_line(Row, RowIndex, 2), nl,
-    print_line(Row, RowIndex, 1), nl.
+    print_line(Row, RowIndex, 1).
 
 /*
 * Prints a single line depending on the row and line index:
@@ -109,19 +112,20 @@ print_cols([Piece|Pieces], RowIndex, LineIndex):-
 * Prints a column depending on the current piece:
 * print_col(+Piece, +RowIndex, +LineIndex).
 */
+print_col(piece(empty), 1, 2):- write('|___________|'), !.
 print_col(piece(empty), _, _):- write('|           |').
 
-print_col(piece(samurai), _, 5):- write('|  /_\      |').
+print_col(piece(samurai), _, 5):- write('|  /_\\      |').
 print_col(piece(samurai), _, 4):- write('| [-_-]     |').
 print_col(piece(samurai), _, 3):- write('| --|-ol==> |').
-print_col(piece(samurai), 1, 2):- write('|__/ \______|').
-print_col(piece(samurai), _, 2):- write('|  / \      |').
+print_col(piece(samurai), 1, 2):- write('|__/ \\______|').
+print_col(piece(samurai), _, 2):- write('|  / \\      |').
 
 print_col(piece(ninja), _, 5):- write('|    //     |').
 print_col(piece(ninja), _, 4):- write('|   [-*-]~  |').
 print_col(piece(ninja), _, 3):- write('|  x--|--   |').
-print_col(piece(ninja), 1, 2):- write('|____/ \____|').
-print_col(piece(ninja), _, 2):- write('|    / \    |').
+print_col(piece(ninja), 1, 2):- write('|____/ \\____|').
+print_col(piece(ninja), _, 2):- write('|    / \\    |').
 
 /*
 * Prints a string/char n times to the output stream:
@@ -139,7 +143,6 @@ print_n_times(Value, Count):-
 * read_from_file(+Path).
 */
 read_from_file(Path):-
-    nl,
     open(Path, read, Stream),
     print_file(Stream),
     close(Stream),
