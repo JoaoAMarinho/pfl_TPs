@@ -111,17 +111,17 @@ print_cols([Piece|Pieces], RowIndex, LineIndex):-
 */
 print_col(piece(empty), _, _):- write('|           |').
 
-print_col(piece(samurai), _, 5):- write('|  /_\      |').
+print_col(piece(samurai), _, 5):- write('|  /_\\      |').
 print_col(piece(samurai), _, 4):- write('| [-_-]     |').
 print_col(piece(samurai), _, 3):- write('| --|-ol==> |').
-print_col(piece(samurai), 1, 2):- write('|__/ \______|').
-print_col(piece(samurai), _, 2):- write('|  / \      |').
+print_col(piece(samurai), 1, 2):- write('|__/ \\______|').
+print_col(piece(samurai), _, 2):- write('|  / \\      |').
 
 print_col(piece(ninja), _, 5):- write('|    //     |').
 print_col(piece(ninja), _, 4):- write('|   [-*-]~  |').
 print_col(piece(ninja), _, 3):- write('|  x--|--   |').
-print_col(piece(ninja), 1, 2):- write('|____/ \____|').
-print_col(piece(ninja), _, 2):- write('|    / \    |').
+print_col(piece(ninja), 1, 2):- write('|____/ \\____|').
+print_col(piece(ninja), _, 2):- write('|    / \\    |').
 
 /*
 * Prints a string/char n times to the output stream:
