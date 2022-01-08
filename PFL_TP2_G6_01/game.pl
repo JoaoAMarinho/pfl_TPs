@@ -1,5 +1,6 @@
 :-use_module(library(lists)).
 :- [parser].
+:- [board_view].
 
 /*
 * Returns an 8x8 board with ninjas and samurais in the first and last rows, respectively: 
@@ -14,33 +15,6 @@ build_board(Board) :- Board = [
     [piece(empty),piece(empty),piece(empty),piece(empty),piece(empty),piece(empty),piece(empty),piece(empty)],
     [piece(empty),piece(empty),piece(empty),piece(empty),piece(empty),piece(empty),piece(empty),piece(empty)],
     [piece(samurai),piece(samurai),piece(samurai),piece(samurai),piece(samurai),piece(samurai),piece(samurai),piece(samurai)] ].
-
-% print current board status
-printBoard([Row]):-
-    nl,
-    printRow(Row),
-    nl,!.
-printBoard([Row|List]):-
-    nl,
-    printRow(Row),
-    printBoard(List).
-
-printRow([Piece]):-
-    printPiece(Piece),!.
-
-printRow([Piece|List]):-
-    printPiece(Piece),
-    write(' , '),
-    printRow(List).
-
-printPiece(piece(Type)):-
-    letter(Type, Char),
-    write(Char).
-
-% letter(?Type, ?Char)
-letter(samurai, 's').
-letter(ninja,   'n').
-letter(empty,   '_').
 
 /*
 * Indicates the opponent of a piece: 
@@ -63,10 +37,9 @@ play_game(_, _, _, Points2):- % check if game has ended
     write('\nNinjas WON!\n').
 
 play_game(samurai, Board, Player1Points, Player2Points):- % play piece according to player turn
-    printBoard(Board),
+    print_board(Board),
     write('\nSamurais turn\n'),
     repeat,
-    write('\nReceiving Input\n'),
     read_move(X, Y, Nx, Ny),
     nth1(Y, Board, Row),
     nth1(X, Row, piece(samurai)), % pick correct piece
@@ -75,7 +48,7 @@ play_game(samurai, Board, Player1Points, Player2Points):- % play piece according
     play_game(ninja, NewBoard, NewPlayer1Points, Player2Points).
 
 play_game(ninja, Board, Player1Points, Player2Points):- % play piece according to player turn
-    printBoard(Board),
+    print_board(Board),
     write('\nNinjas turn\n'),
     repeat,
     read_move(X, Y, Nx, Ny),

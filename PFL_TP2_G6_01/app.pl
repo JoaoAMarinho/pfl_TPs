@@ -1,9 +1,9 @@
 % Includes
-%:- [main].
+%:- [game].
 
-welcome_menu_path(X):- X = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6_01/PFL_TP2_G6_01/menus/welcome_menu.txt'. 
-instructions_path(X):- X = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6_01/PFL_TP2_G6_01/menus/instructions.txt'. 
-difficulty_path(X):-   X = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6_01/PFL_TP2_G6_01/menus/difficulty.txt'. 
+welcome_menu_path(Path):- Path = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6_01/PFL_TP2_G6_01/assets/menus/welcome_menu.txt'. 
+instructions_path(Path):- Path = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6_01/PFL_TP2_G6_01/assets/menus/instructions.txt'. 
+difficulty_path(Path):-   Path = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6_01/PFL_TP2_G6_01/assets/menus/difficulty.txt'. 
 
 start:-
     clear_screen,
@@ -46,22 +46,3 @@ change_menu(4, start):- exit.
 change_menu(3, bot):- start.
 
 change_menu(_, instructions):- start.
-
-% File operations
-
-read_from_file(Path):-
-    nl,
-    open(Path, read, Stream),
-    print_file(Stream),
-    close(Stream),
-    nl.
-
-print_file(Stream):-
-    peek_code(Stream,-1).
-
-print_file(Stream):-
-    get_char(Stream, Char),
-    write(Char),
-    print_file(Stream).
-
-clear_screen:- write('\33\[2J').

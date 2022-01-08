@@ -7,12 +7,6 @@ Features:
         ninja representation:    
         samurai representation:  
     
-    Input:
-        Game  - Read (single char between)(single digit between)(space or /)(single char between)(single digit between)(\n)
-
-        Specifics - Read specific char, read single char/digit between
-        ex: A1/G2 (Curr pos/New pos)
-        ex: a1/g2 e variantes.
 Files:
 
 Game Flow

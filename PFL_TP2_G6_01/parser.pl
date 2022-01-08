@@ -106,18 +106,3 @@ read_move(X, Y, Nx, Ny):-
 */
 in_bounds(Value):-
     between(1,8, Value).
-
-type_of_character(Ch, Type):-
-    Ch >= 'a', Ch =< 'z',!,
-    Type = lowercase.
-
-type_of_character(Ch, Type):-
-    Ch >= 'A', Ch =< 'Z',!,
-    Type = uppercase.
-    
-type_of_character(Ch, Type):-
-    Ch >= '0', Ch =< '9',!,
-    Type = digit.
-
-type_of_character(_Ch, Type):-
-    Type = other.
