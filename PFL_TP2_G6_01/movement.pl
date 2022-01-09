@@ -42,63 +42,53 @@ get_positions(Type, Board, X, Y, [Vector|List], Positions, NewPositions):-
 * Returns a list with possible board positions by following a given vector:
 * get_positions_for_vector(+Type, +Board, +X, +Y, +Vector, +CurrentsPositions, -Result).
 */
-get_positions_for_vector(Type, Board, X, Y, (Vx, Vy), Positions, Result):-     % find empty space, continue search
-    Nx is X+Vx,
-    Ny is Y+Vy,
-    nth1(Ny, Board, Row),
-    nth1(Nx, Row, piece(empty)),!,
-    append([(Nx, Ny)], Positions, NewPositions),
-    get_positions_for_vector(Type, Board, Nx, Ny, (Vx,Vy), NewPositions, Result).
-
-get_positions_for_vector(_, _, X, Y, (Vx,Vy), Positions, Positions):-          % handle out of board
+get_positions_for_vector(_, _, X, Y, (Vx,Vy), Positions, Positions):-        % handle out of board
     Nx is X+Vx,
     Ny is Y+Vy,
     out_of_bounds(Nx,Ny), !.
 
-get_positions_for_vector(Type, Board, X, Y, (Vx, Vy), Positions, Positions):-  % find opponent piece, stop search
-    Nx is X+Vx,
-    Ny is Y+Vy,
-    opponent(Type, Opponent),
-    nth1(Ny, Board, Row),
-    nth1(Nx, Row, piece(Opponent)), !.
+get_positions_for_vector(Type, Board, X, Y, Vector, Positions, Result):-     % find empty space, continue search
+    verify_piece_in_new_position(X, Y, Vector, Board, empty, Nx, Ny), !,
+    get_positions_for_vector(Type, Board, Nx, Ny, Vector, [(Nx, Ny) | Positions], Result).
 
-get_positions_for_vector(Type, Board, X, Y, (Vx, Vy), Positions, Result):-     % find friendly piece, continue search until opponent piece
+get_positions_for_vector(Type, Board, X, Y, Vector, Positions, Positions):-  % find opponent piece, stop search
+    opponent(Type, Opponent),
+    verify_piece_in_new_position(X, Y, Vector, Board, Opponent, Nx, Ny), !.
+
+get_positions_for_vector(Type, Board, X, Y, Vector, Positions, Result):-     % find friendly piece, continue search until opponent piece
+    verify_piece_in_new_position(X, Y, Vector, Board, Type, Nx, Ny),
+    get_opponent_piece(Type, Board, Nx, Ny, Vector, Positions, Result).
+
+/*
+* Applies the vector to the given coords and verifies if a piece Type is in that board position:
+* verify_piece_in_new_position(+X, +Y, +Vector, +Board, +Type, -Nx, -Ny).
+*/
+verify_piece_in_new_position(X, Y, (Vx, Vy), Board, Type, Nx, Ny):-
     Nx is X+Vx,
     Ny is Y+Vy,
     nth1(Ny, Board, Row),
-    nth1(Nx, Row, piece(Type)),
-    get_opponent_piece(Type, Board, Nx, Ny, (Vx,Vy), Positions, Result).
+    nth1(Nx, Row, piece(Type)).
 
 /*
 * Returns a position by following a vector if it finds an opponent piece:
 * get_opponent_piece(+Type, +Board, +X, +Y, +Vector, +CurrentPositions, -Result).
 */
-get_opponent_piece(Type, Board, X, Y, (Vx, Vy), Positions, Result):-          % find empty space, continue search
-    Nx is X+Vx,
-    Ny is Y+Vy,
-    nth1(Ny, Board, Row),
-    nth1(Nx, Row, piece(empty)),!,
-    get_opponent_piece(Type, Board, Nx, Ny, (Vx,Vy), Positions, Result).
-
-get_opponent_piece(_, _, X, Y, (Vx,Vy), Positions, Positions):-               % handle out of board
+get_opponent_piece(_, _, X, Y, (Vx,Vy), Positions, Positions):-                    % handle out of board
     Nx is X+Vx,
     Ny is Y+Vy,
     out_of_bounds(Nx,Ny),!.
 
-get_opponent_piece(Type, Board, X, Y, (Vx, Vy), Positions, Positions):-       % find friendly piece, stop search
-    Nx is X+Vx,
-    Ny is Y+Vy,
-    nth1(Ny, Board, Row),
-    nth1(Nx, Row, piece(Type)),!.
+get_opponent_piece(Type, Board, X, Y, Vector, Positions, Result):-                 % find empty space, continue search
+    verify_piece_in_new_position(X, Y, Vector, Board, empty, Nx, Ny), !,
+    get_opponent_piece(Type, Board, Nx, Ny, Vector, Positions, Result).
 
-get_opponent_piece(Type, Board, X, Y, (Vx, Vy), Positions, Result):-          % find opponent piece, add position and stop search
-    Nx is X+Vx,
-    Ny is Y+Vy,
+
+get_opponent_piece(Type, Board, X, Y, Vector, Positions, Positions):-              % find friendly piece, stop search
+    verify_piece_in_new_position(X, Y, Vector, Board, Type, Nx, Ny), !.
+
+get_opponent_piece(Type, Board, X, Y, Vector, Positions, [(Nx, Ny) | Positions]):- % find opponent piece, add position and stop search
     opponent(Type, Opponent),
-    nth1(Ny, Board, Row),
-    nth1(Nx, Row, piece(Opponent)),
-    append([(Nx, Ny)], Positions, Result).
-
+    verify_piece_in_new_position(X, Y, Vector, Board, Opponent, Nx, Ny).
 /*
 * Performs a piece movement and updates the score accordingly:
 * move_piece(+Type, +Board, +X, +Y, +Nx, +Ny, -NewBoard, +PlayerPoints, -NewPlayerPoints).
