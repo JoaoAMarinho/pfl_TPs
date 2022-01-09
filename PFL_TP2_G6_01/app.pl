@@ -11,7 +11,6 @@ difficulty_path(Path):-   Path = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_T
 * difficulty.
 * exit.
 */ 
-
 start:-
     clear_screen,
     welcome_menu_path(Path),
@@ -26,7 +25,7 @@ instructions:-
     instructions_path(Path),
     read_from_file(Path),
     repeat,
-    peek_code(Code), skip_line,
+    peek_code(_), skip_line,
     change_menu(_, instructions).
 
 difficulty:-
@@ -45,13 +44,13 @@ exit:-
 * Handles menu transition depending on the option choosen and the source menu:
 * change_menu(+Option, +From).
 */ 
-% change_menu(1, start):- play_game.
+change_menu(1, start):- game(pvp).
 change_menu(2, start):- difficulty.
 change_menu(3, start):- instructions.
 change_menu(4, start):- exit.
 
-% change_menu(1, bot):- easy_bot.
-% change_menu(2, bot):- hard_bot.
+change_menu(1, bot):- game(easy).
+change_menu(2, bot):- game(hard).
 change_menu(3, bot):- start.
 
 change_menu(_, instructions):- start.

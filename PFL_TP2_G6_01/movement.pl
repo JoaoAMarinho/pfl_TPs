@@ -13,7 +13,10 @@ opponent(ninja, samurai).
 */
 piece_directions(Vectors) :- Vectors = [(-1,-1),(-1,0),(0,-1),(-1,1),(1,-1),(0,1),(1,0),(1,1)].
 
-% check if movement is valid
+/*
+* Validates if a certain move is possible: 
+* valid_piece_move(+Type, +Board, +X, +Y, +Nx, +Ny).
+*/
 valid_piece_move(Type, Board, X, Y, Nx, Ny):-
     piece_directions(Vectors),
     get_positions(Type, Board, X, Y, Vectors, [], Positions),
@@ -22,7 +25,10 @@ valid_piece_move(Type, Board, X, Y, Nx, Ny):-
 
 valid_piece_move(Type, Board, X, Y, Nx, Ny).
 
-% return a list with possible board positions for piece
+/*
+* Returns a list with possible board positions for piece:
+* get_positions(+Type, +Board, +X, +Y, +Vectors, +InitialPositions, -Result).
+*/
 get_positions(Type, Board, X, Y, [Vector], Positions, NewPositions) :-
     get_positions_for_vector(Type, Board, X, Y, Vector, [], Result),
     append(Result, Positions, NewPositions).
@@ -32,7 +38,10 @@ get_positions(Type, Board, X, Y, [Vector|List], Positions, NewPositions):-
     append(Result, Positions, CurrPositions),
     get_positions(Type, Board, X, Y, List, CurrPositions, NewPositions).
 
-% return a list with possible board positions by following a given vector
+/*
+* Returns a list with possible board positions by following a given vector:
+* get_positions_for_vector(+Type, +Board, +X, +Y, +Vector, +CurrentsPositions, -Result).
+*/
 get_positions_for_vector(Type, Board, X, Y, (Vx, Vy), Positions, Result):-     % find empty space, continue search
     Nx is X+Vx,
     Ny is Y+Vy,
@@ -58,28 +67,31 @@ get_positions_for_vector(Type, Board, X, Y, (Vx, Vy), Positions, Result):-     %
     Ny is Y+Vy,
     nth1(Ny, Board, Row),
     nth1(Nx, Row, piece(Type)),
-    getOpponentPiece(Type, Board, Nx, Ny, (Vx,Vy), Positions, Result).
+    get_opponent_piece(Type, Board, Nx, Ny, (Vx,Vy), Positions, Result).
 
-% return position when found opponent piece
-getOpponentPiece(Type, Board, X, Y, (Vx, Vy), Positions, Result):-          % find empty space, continue search
+/*
+* Returns a position by following a vector if it finds an opponent piece:
+* get_opponent_piece(+Type, +Board, +X, +Y, +Vector, +CurrentPositions, -Result).
+*/
+get_opponent_piece(Type, Board, X, Y, (Vx, Vy), Positions, Result):-          % find empty space, continue search
     Nx is X+Vx,
     Ny is Y+Vy,
     nth1(Ny, Board, Row),
     nth1(Nx, Row, piece(empty)),!,
-    getOpponentPiece(Type, Board, Nx, Ny, (Vx,Vy), Positions, Result).
+    get_opponent_piece(Type, Board, Nx, Ny, (Vx,Vy), Positions, Result).
 
-getOpponentPiece(_, _, X, Y, (Vx,Vy), Positions, Positions):-               % handle out of board
+get_opponent_piece(_, _, X, Y, (Vx,Vy), Positions, Positions):-               % handle out of board
     Nx is X+Vx,
     Ny is Y+Vy,
     out_of_bounds(Nx,Ny),!.
 
-getOpponentPiece(Type, Board, X, Y, (Vx, Vy), Positions, Positions):-       % find friendly piece, stop search
+get_opponent_piece(Type, Board, X, Y, (Vx, Vy), Positions, Positions):-       % find friendly piece, stop search
     Nx is X+Vx,
     Ny is Y+Vy,
     nth1(Ny, Board, Row),
     nth1(Nx, Row, piece(Type)),!.
 
-getOpponentPiece(Type, Board, X, Y, (Vx, Vy), Positions, Result):-          % find opponent piece, add position and stop search
+get_opponent_piece(Type, Board, X, Y, (Vx, Vy), Positions, Result):-          % find opponent piece, add position and stop search
     Nx is X+Vx,
     Ny is Y+Vy,
     opponent(Type, Opponent),
@@ -87,8 +99,11 @@ getOpponentPiece(Type, Board, X, Y, (Vx, Vy), Positions, Result):-          % fi
     nth1(Nx, Row, piece(Opponent)),
     append([(Nx, Ny)], Positions, Result).
 
-% perform movement
-move_piece(Type, Board, X, Y, Nx, Ny, NewBoard, Player1Points, NewPlayer1Points):- % attack move
+/*
+* Performs a piece movement and updates the score accordingly:
+* move_piece(+Type, +Board, +X, +Y, +Nx, +Ny, -NewBoard, +PlayerPoints, -NewPlayerPoints).
+*/
+move_piece(Type, Board, X, Y, Nx, Ny, NewBoard, PlayerPoints, NewPlayerPoints):- % attack move
     nth1(Y, Board, Row1),
     replace(X, piece(empty), Row1, NewRow1),
     replace(Y, NewRow1, Board, MiddleBoard),
@@ -97,7 +112,7 @@ move_piece(Type, Board, X, Y, Nx, Ny, NewBoard, Player1Points, NewPlayer1Points)
     nth1(Nx, Row2, piece(Opponent)),!,
     replace(Nx, piece(Type), Row2, NewRow2),
     replace(Ny, NewRow2, MiddleBoard, NewBoard),
-    NewPlayer1Points is Player1Points+1.
+    NewPlayerPoints is PlayerPoints+1.
 
 move_piece(Type, Board, X, Y, Nx, Ny, NewBoard, Player1Points, Player1Points):- % simple move
     nth1(Y, Board, Row1),
@@ -107,14 +122,20 @@ move_piece(Type, Board, X, Y, Nx, Ny, NewBoard, Player1Points, Player1Points):- 
     replace(Nx, piece(Type), Row2, NewRow2),
     replace(Ny, NewRow2, MiddleBoard, NewBoard).
 
-% replaces the Elem in the list based on the Index    
+/*
+* Replaces the Element in the list based on the Index:
+* replace(+Index, +Element, +List, -ResultingList).
+*/    
 replace(_, _, [], []).
 replace(1, R, [H|T], [R|T]).
 replace(I, R, [H1|T1], [H1|T2]) :-
     NewI is I-1,
     replace(NewI, R, T1, T2).
 
-% checks if position is out of bounds
+/*
+* Checks if position is out of bounds:
+* replace(+Index, +Element, +List, -ResultingList).
+*/  
 out_of_bounds(X, Y):-
     \+between(1, 8, X);
     \+between(1, 8, Y).

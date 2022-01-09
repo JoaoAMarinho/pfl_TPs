@@ -60,7 +60,9 @@ play_game(ninja, Board, Player1Points, Player2Points):- % play piece according t
     play_game(samurai, NewBoard, Player1Points, NewPlayer2Points).
 
 /*
-* Pvp game starter:
-* pvp.
+* Game starter:
+* game(+Type).
 */
-pvp:- build_board(Board), play_game(samurai, Board, 0, 0).
+game(pvp):- build_board(Board), play_game(samurai, Board, 0, 0).
+game(easy):- build_board(Board), play_game(samurai, Board, 0, 0).
+game(hard):- build_board(Board), play_game(samurai, Board, 0, 0).
