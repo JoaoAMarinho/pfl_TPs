@@ -1,9 +1,16 @@
-% Includes
-%:- [game].
+:- [game].
 
 welcome_menu_path(Path):- Path = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6_01/PFL_TP2_G6_01/assets/menus/welcome_menu.txt'. 
 instructions_path(Path):- Path = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6_01/PFL_TP2_G6_01/assets/menus/instructions.txt'. 
 difficulty_path(Path):-   Path = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6_01/PFL_TP2_G6_01/assets/menus/difficulty.txt'. 
+
+/*
+* Main menu handlers:
+* start.
+* instructions.
+* difficulty.
+* exit.
+*/ 
 
 start:-
     clear_screen,
@@ -34,15 +41,17 @@ difficulty:-
 exit:-
     clear_screen.
 
-% Change menus
-
+/*
+* Handles menu transition depending on the option choosen and the source menu:
+* change_menu(+Option, +From).
+*/ 
 % change_menu(1, start):- play_game.
 change_menu(2, start):- difficulty.
 change_menu(3, start):- instructions.
 change_menu(4, start):- exit.
 
-% change_menu(1, bot):- instructions.
-% change_menu(2, bot):- instructions.
+% change_menu(1, bot):- easy_bot.
+% change_menu(2, bot):- hard_bot.
 change_menu(3, bot):- start.
 
 change_menu(_, instructions):- start.
