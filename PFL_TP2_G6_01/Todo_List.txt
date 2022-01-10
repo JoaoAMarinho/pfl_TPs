@@ -1,16 +1,3 @@
-Features:
-    
-    Board:
-        blocos 11x5
-
-        X, Y coords: Letters, Numbers
-        ninja representation:    
-        samurai representation:  
-    
-Files:
-
-Game Flow
-Moves
-Specific prints
-Input validator
-
+- Read from files (expensive?)
+- output n_times (failure vs recursion)
+- generic game cycle from slides
