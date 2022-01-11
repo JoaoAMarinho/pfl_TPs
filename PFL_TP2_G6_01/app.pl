@@ -1,8 +1,12 @@
 :- [game].
 
-welcome_menu_path(Path):- Path = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6_01/PFL_TP2_G6_01/assets/menus/welcome_menu.txt'. 
-instructions_path(Path):- Path = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6_01/PFL_TP2_G6_01/assets/menus/instructions.txt'. 
-difficulty_path(Path):-   Path = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6_01/PFL_TP2_G6_01/assets/menus/difficulty.txt'. 
+/*
+* Returns path to file according to Menu:
+* menu_path(+Menu, -Path);
+*/
+menu_path(start, Path):-        Path = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6_01/PFL_TP2_G6_01/assets/menus/welcome_menu.txt'. 
+menu_path(instructions, Path):- Path = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6_01/PFL_TP2_G6_01/assets/menus/instructions.txt'. 
+menu_path(difficulty, Path):-   Path = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6_01/PFL_TP2_G6_01/assets/menus/difficulty.txt'. 
 
 /*
 * Main menu handlers:
@@ -12,26 +16,20 @@ difficulty_path(Path):-   Path = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_T
 * exit.
 */ 
 start:-
-    clear_screen,
-    welcome_menu_path(Path),
-    read_from_file(Path),
+    menu_viewer(start),
     repeat,
     read_digit_between(1, 4, Value),
     read_specific_char('\n'),
     change_menu(Value, start).
 
 instructions:-
-    clear_screen,
-    instructions_path(Path),
-    read_from_file(Path),
+    menu_viewer(instructions),
     repeat,
     peek_code(_), skip_line,
     change_menu(_, instructions).
 
 difficulty:-
-    clear_screen,
-    difficulty_path(Path),
-    read_from_file(Path),
+    menu_viewer(difficulty),
     repeat,
     read_digit_between(1, 3, Value),
     read_specific_char('\n'),
@@ -39,6 +37,15 @@ difficulty:-
 
 exit:-
     clear_screen.
+
+/*
+* Display a certain Menu specified by its parameter:
+* menu_viewer(+Menu).
+*/ 
+menu_viewer(Menu):-
+    clear_screen,
+    menu_path(Menu, Path),
+    read_from_file(Path).
 
 /*
 * Handles menu transition depending on the option choosen and the source menu:
