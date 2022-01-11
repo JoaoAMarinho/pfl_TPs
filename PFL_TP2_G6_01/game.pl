@@ -70,7 +70,7 @@ play_game(ninja, Board, Player1Points, Player2Points, Mode):- % play piece accor
 
 play_game(bot, Board, Player1Points, Player2Points, Mode):- % play piece according to player turn
     print_board(Board),
-    write('\Bot turn\n'),
+    write('\nBot turn\n'),
     repeat,
     read_move(X, Y, Nx, Ny),
     piece_in_board(Board, ninja, X, Y),
