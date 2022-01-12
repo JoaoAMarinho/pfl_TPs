@@ -93,13 +93,19 @@ get_opponent_piece(Type, Board, X, Y, Vector, Positions, [(Nx, Ny, Opponent) | P
 * Performs a piece movement and returns the new board state:
 * move_piece(+Type, +Board, +X, +Y, +Nx, +Ny, -NewBoard).
 */
-move_piece(Type, Piece, Board, X, Y, Nx, Ny, NewBoard):-
+move_piece(Type, Board, X-Y-Nx-Ny, NewBoard):-
     nth1(Y, Board, Row1),
     replace(X, piece(empty), Row1, NewRow1),
     replace(Y, NewRow1, Board, MiddleBoard),
     nth1(Ny, MiddleBoard, Row2),
     replace(Nx, piece(Type), Row2, NewRow2),
     replace(Ny, NewRow2, MiddleBoard, NewBoard).
+
+/*
+find_move(easy, Board, X, Y, Nx, Ny, Piece):-
+get
+get_positions(Type, Board, X, Y, Vectors, [], Positions),
+    findall(Position, )*/
 
 /*
 * Replaces the Element in the list based on the Index:

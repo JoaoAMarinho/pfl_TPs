@@ -4,26 +4,39 @@
 
 /*
 * Returns an 8x8 board with ninjas and samurais in the first and last rows, respectively: 
-* build_board(-Board).
+* build_board(+Size, -Board).
 */
-build_board(Board) :- Board = [
-    [piece(ninja),piece(ninja),piece(ninja),piece(ninja),piece(ninja),piece(ninja),piece(ninja),piece(ninja)],
-    [piece(empty),piece(empty),piece(empty),piece(empty),piece(empty),piece(empty),piece(empty),piece(empty)],
-    [piece(empty),piece(empty),piece(empty),piece(empty),piece(empty),piece(empty),piece(empty),piece(empty)],
-    [piece(empty),piece(empty),piece(empty),piece(empty),piece(empty),piece(empty),piece(empty),piece(empty)],
-    [piece(empty),piece(empty),piece(empty),piece(empty),piece(empty),piece(empty),piece(empty),piece(empty)],
-    [piece(empty),piece(empty),piece(empty),piece(empty),piece(empty),piece(empty),piece(empty),piece(empty)],
-    [piece(empty),piece(empty),piece(empty),piece(empty),piece(empty),piece(empty),piece(empty),piece(empty)],
-    [piece(samurai),piece(samurai),piece(samurai),piece(samurai),piece(samurai),piece(samurai),piece(samurai),piece(samurai)] ].
+build_board(Size, Board):-
+    build_n_rows(1, Size, samurai, [], FinalRow),
+    SizeMiddle is Size-2,
+    build_n_rows(SizeMiddle, Size, empty, FinalRow, MiddleRows),
+    build_n_rows(1, Size, ninja, MiddleRows, Board).
+
+build_n_rows(0, _, _, Rows, Rows).
+build_n_rows(NumRows, RowSize, Type, Rows, Res):-
+    build_row(RowSize, Type, [], Row),
+    NewNumRows is NumRows-1,
+    build_n_rows(NewNumRows, RowSize, Type, [Row|Rows], Res).
+
+build_row(0, _, Row, Row).
+build_row(RowSize, Type, Row, Res):-
+    NewRowSize is RowSize-1,
+    build_row(NewRowSize, Type, [piece(Type)|Row], Res).
+
 
 /*
 * Prints player turn message:
 * print_turn(+Type).
 */
 print_turn(samurai):- write('\nSamurais turn\n').
-print_turn(ninja):- write('\nNinjas turn\n').
-print_turn(bot):- write('\nBot turn\n').
+print_turn(ninja):-   write('\nNinjas turn\n').
 
+congratulate(samurai):- write('\nSamurais WON!\n').
+congratulate(ninja):-   write('\nNinjas WON!\n').
+
+display_game(Board-_-_-_-Type):-
+    print_board(Board),
+    print_turn(Type).
 /*
 * Validates if a piece is in the given board at the specified coords: 
 * piece_in_board(+Board, +Type, +X, +Y).
@@ -45,56 +58,55 @@ update_points(samurai, _, Player1Points, Player2Points, NewPlayer1Points, Player
 update_points(_, _, Player1Points, Player2Points, Player1Points, NewPlayer2Points):-
     NewPlayer2Points is Player2Points+1,!.
 
-/*
-* Returns the new type of player after piece play: 
-* change_type(+Type, +Mode, -NewType).
-*/
-change_type(samurai, pvp, ninja).
-change_type(ninja, pvp, samurai).
-change_type(bot, _, samurai).
-change_type(samurai, _, bot).
+
+game_over(_-Size-Points1-Points2-_, samurai):-
+    FinalPoints is ceiling(Size/2),
+    Points1 == FinalPoints, !.
+
+game_over(_-Size-Points1-Points2-_, ninja):-
+    FinalPoints is ceiling(Size/2),
+    Points2 == FinalPoints, !.
+
+
+game_cycle(GameState, _, _):-
+    game_over(GameState, Winner), !,
+    congratulate(Winner).
+
+game_cycle(GameState, P1, P2):-
+    choose_move(GameState, Player, Move), !,
+    move(GameState, Move, NewGameState),
+    display_game(GameState),
+    game_cyle(NewGameState, P1, P2).
+
+move(Board-Size-Points1-Points2-Type, Move, NewGameState):-
+    move_piece(Type, Board, Move, NewBoard, Piece),
+    update_points(Type, Piece, Points1, Points2, NewPoints1, NewPoints2),
+    opponent(Type, Opponent),
+    NewGameState = NewBoard-Size-NewPoints1-NewPoints2-Opponent.
 
 /*
-* Game handler:
-* play_game(+playerTurn, +Board, +Player1Points, +Player2Points).
+* Game starter:
+* game(+P1, +P2, +Size).
 */
-play_game(_, _, Points1, _, _):- % check if game has ended
-    Points1 == 4,
-    write('\nSamurais WON!\n').
+game(P1, P2, Size):- 
+    initial_state(Size, GameState), 
+    display_game(GameState),
+    game_cycle(GameState, P1, P2).
 
-play_game(_, _, _, Points2, _):- % check if game has ended
-    Points2 == 4,
-    write('\nNinjas WON!\n').
-
-play_game(Type, Board, Player1Points, Player2Points, Mode):- % play piece according to player turn
-    print_board(Board),
-    print_turn(Type),
-    game_cyle(Mode, Type, Board, Player1Points, Player2Points).
+/*
+* Returns inital state according to board size:
+* game(+P1, +P2, +Size).
+*/
+initial_state(Size, Board-Size-0-0-samurai):-
+    build_board(Size, Board).
 
 /*
 * Game cycle according to current mode:
 * game_cyle(+Mode, +Type, +Board, +Player1Points, +Player2Points).
 */
-game_cyle(pvp, Type, Board, Player1Points, Player2Points):-
-    repeat,
-    read_move(X, Y, Nx, Ny),
-    piece_in_board(Board, Type, X, Y),
-    valid_piece_move(Type, Board, X, Y, Nx, Ny, Piece),!,
-    execute_play(Type, Piece, Board, X, Y, Nx, Ny, Player1Points, Player2Points, pvp).
-
-# game_cyle(Difficulty, bot):-
-#     find_best_move(),
-#     execute_play().
-
-execute_play(Type, Piece, Board, X, Y, Nx, Ny, Player1Points, Player2Points, Mode):-
-    move_piece(Type, Piece, Board, X, Y, Nx, Ny, NewBoard),
-    update_points(Type, Piece, Player1Points, Player2Points, NewPlayer1Points, NewPlayer2Points),
-    change_type(Type, Mode, NewType),
-    play_game(NewType, NewBoard, NewPlayer1Points, NewPlayer2Points, Mode).
-
-
-/*
-* Game starter:
-* game(+Mode).
-*/
-game(Mode):- build_board(Board), play_game(samurai, Board, 0, 0, Mode).
+# game_cyle(pvp, Type, Board, Player1Points, Player2Points):-
+#     repeat,
+#     read_move(X, Y, Nx, Ny),
+#     piece_in_board(Board, Type, X, Y),
+#     valid_piece_move(Type, Board, X, Y, Nx, Ny, Piece),!,
+#     execute_play(Type, Piece, Board, X, Y, Nx, Ny, Player1Points, Player2Points, pvp).
