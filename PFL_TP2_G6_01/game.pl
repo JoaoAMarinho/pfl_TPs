@@ -17,6 +17,14 @@ build_board(Board) :- Board = [
     [piece(samurai),piece(samurai),piece(samurai),piece(samurai),piece(samurai),piece(samurai),piece(samurai),piece(samurai)] ].
 
 /*
+* Prints player turn message:
+* print_turn(+Type).
+*/
+print_turn(samurai):- write('\nSamurais turn\n').
+print_turn(ninja):- write('\nNinjas turn\n').
+print_turn(bot):- write('\nBot turn\n').
+
+/*
 * Validates if a piece is in the given board at the specified coords: 
 * piece_in_board(+Board, +Type, +X, +Y).
 */
@@ -28,12 +36,23 @@ piece_in_board(Board, Type, X, Y):-
 piece_in_board(Board, Type, X, Y).
 
 /*
-* Returns the new turn after the samurais play, according to the current mode: 
-* change_turn(+Mode, -NewTurn).
+* Updates points according to piece movement:
+* update_points(+Type, +Piece, +Player1Points, +Player2Points, -NewPlayer1Points, -NewPlayer2Points).
 */
-change_turn(pvp,  ninja).
-change_turn(easy, bot).
-change_turn(hard, bot).
+update_points(_, empty, Player1Points, Player2Points, Player1Points, Player2Points):- !.
+update_points(samurai, _, Player1Points, Player2Points, NewPlayer1Points, Player2Points):-
+    NewPlayer1Points is Player1Points+1,!.
+update_points(_, _, Player1Points, Player2Points, Player1Points, NewPlayer2Points):-
+    NewPlayer2Points is Player2Points+1,!.
+
+/*
+* Returns the new type of player after piece play: 
+* change_type(+Type, +Mode, -NewType).
+*/
+change_type(samurai, pvp, ninja).
+change_type(ninja, pvp, samurai).
+change_type(bot, _, samurai).
+change_type(samurai, _, bot).
 
 /*
 * Game handler:
@@ -47,36 +66,32 @@ play_game(_, _, _, Points2, _):- % check if game has ended
     Points2 == 4,
     write('\nNinjas WON!\n').
 
-play_game(samurai, Board, Player1Points, Player2Points, Mode):- % play piece according to player turn
+play_game(Type, Board, Player1Points, Player2Points, Mode):- % play piece according to player turn
     print_board(Board),
-    write('\nSamurais turn\n'),
-    repeat,
-    read_move(X, Y, Nx, Ny),
-    piece_in_board(Board, samurai, X, Y),
-    valid_piece_move(samurai, Board, X, Y, Nx, Ny),!,
-    move_piece(samurai, Board, X, Y, Nx, Ny, NewBoard, Player1Points, NewPlayer1Points),
-    change_turn(Mode, NewTurn),
-    play_game(NewTurn, NewBoard, NewPlayer1Points, Player2Points, Mode).
+    print_turn(Type),
+    game_cyle(Mode, Type, Board, Player1Points, Player2Points).
 
-play_game(ninja, Board, Player1Points, Player2Points, Mode):- % play piece according to player turn
-    print_board(Board),
-    write('\nNinjas turn\n'),
+/*
+* Game cycle according to current mode:
+* game_cyle(+Mode, +Type, +Board, +Player1Points, +Player2Points).
+*/
+game_cyle(pvp, Type, Board, Player1Points, Player2Points):-
     repeat,
     read_move(X, Y, Nx, Ny),
-    piece_in_board(Board, ninja, X, Y),
-    valid_piece_move(ninja, Board, X, Y, Nx, Ny),!,
-    move_piece(ninja, Board, X, Y, Nx, Ny, NewBoard, Player2Points, NewPlayer2Points),
-    play_game(samurai, NewBoard, Player1Points, NewPlayer2Points, Mode).
+    piece_in_board(Board, Type, X, Y),
+    valid_piece_move(Type, Board, X, Y, Nx, Ny, Piece),!,
+    execute_play(Type, Piece, Board, X, Y, Nx, Ny, Player1Points, Player2Points, pvp).
 
-play_game(bot, Board, Player1Points, Player2Points, Mode):- % play piece according to player turn
-    print_board(Board),
-    write('\nBot turn\n'),
-    repeat,
-    read_move(X, Y, Nx, Ny),
-    piece_in_board(Board, ninja, X, Y),
-    valid_piece_move(ninja, Board, X, Y, Nx, Ny),!,
-    move_piece(ninja, Board, X, Y, Nx, Ny, NewBoard, Player2Points, NewPlayer2Points),
-    play_game(samurai, NewBoard, Player1Points, NewPlayer2Points, Mode).
+# game_cyle(Difficulty, bot):-
+#     find_best_move(),
+#     execute_play().
+
+execute_play(Type, Piece, Board, X, Y, Nx, Ny, Player1Points, Player2Points, Mode):-
+    move_piece(Type, Piece, Board, X, Y, Nx, Ny, NewBoard),
+    update_points(Type, Piece, Player1Points, Player2Points, NewPlayer1Points, NewPlayer2Points),
+    change_type(Type, Mode, NewType),
+    play_game(NewType, NewBoard, NewPlayer1Points, NewPlayer2Points, Mode).
+
 
 /*
 * Game starter:

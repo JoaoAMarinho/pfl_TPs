@@ -15,15 +15,15 @@ piece_directions(Vectors) :- Vectors = [(-1,-1),(-1,0),(0,-1),(-1,1),(1,-1),(0,1
 
 /*
 * Validates if a certain move is possible: 
-* valid_piece_move(+Type, +Board, +X, +Y, +Nx, +Ny).
+* valid_piece_move(+Type, +Board, +X, +Y, +Nx, +Ny, -Piece).
 */
-valid_piece_move(Type, Board, X, Y, Nx, Ny):-
+valid_piece_move(Type, Board, X, Y, Nx, Ny, Piece):-
     piece_directions(Vectors),
     get_positions(Type, Board, X, Y, Vectors, [], Positions),
-    \+member((Nx,Ny), Positions), !,
-    write('Invalid move!\n'), fail.
+    member((Nx,Ny,Piece), Positions), !.
 
-valid_piece_move(Type, Board, X, Y, Nx, Ny).
+valid_piece_move(_, _, _, _, _, _, _):-
+    write('Invalid move!\n'), fail.
 
 /*
 * Returns a list with possible board positions for piece:
@@ -49,7 +49,7 @@ get_positions_for_vector(_, _, X, Y, (Vx,Vy), Positions, Positions):-        % h
 
 get_positions_for_vector(Type, Board, X, Y, Vector, Positions, Result):-     % find empty space, continue search
     verify_piece_in_new_position(X, Y, Vector, Board, empty, Nx, Ny), !,
-    get_positions_for_vector(Type, Board, Nx, Ny, Vector, [(Nx, Ny) | Positions], Result).
+    get_positions_for_vector(Type, Board, Nx, Ny, Vector, [(Nx, Ny, empty) | Positions], Result).
 
 get_positions_for_vector(Type, Board, X, Y, Vector, Positions, Positions):-  % find opponent piece, stop search
     opponent(Type, Opponent),
@@ -86,25 +86,14 @@ get_opponent_piece(Type, Board, X, Y, Vector, Positions, Result):-              
 get_opponent_piece(Type, Board, X, Y, Vector, Positions, Positions):-              % find friendly piece, stop search
     verify_piece_in_new_position(X, Y, Vector, Board, Type, Nx, Ny), !.
 
-get_opponent_piece(Type, Board, X, Y, Vector, Positions, [(Nx, Ny) | Positions]):- % find opponent piece, add position and stop search
+get_opponent_piece(Type, Board, X, Y, Vector, Positions, [(Nx, Ny, Opponent) | Positions]):- % find opponent piece, add position and stop search
     opponent(Type, Opponent),
     verify_piece_in_new_position(X, Y, Vector, Board, Opponent, Nx, Ny).
 /*
-* Performs a piece movement and updates the score accordingly:
-* move_piece(+Type, +Board, +X, +Y, +Nx, +Ny, -NewBoard, +PlayerPoints, -NewPlayerPoints).
+* Performs a piece movement and returns the new board state:
+* move_piece(+Type, +Board, +X, +Y, +Nx, +Ny, -NewBoard).
 */
-move_piece(Type, Board, X, Y, Nx, Ny, NewBoard, PlayerPoints, NewPlayerPoints):- % attack move
-    nth1(Y, Board, Row1),
-    replace(X, piece(empty), Row1, NewRow1),
-    replace(Y, NewRow1, Board, MiddleBoard),
-    opponent(Type, Opponent),
-    nth1(Ny, MiddleBoard, Row2),
-    nth1(Nx, Row2, piece(Opponent)),!,
-    replace(Nx, piece(Type), Row2, NewRow2),
-    replace(Ny, NewRow2, MiddleBoard, NewBoard),
-    NewPlayerPoints is PlayerPoints+1.
-
-move_piece(Type, Board, X, Y, Nx, Ny, NewBoard, Player1Points, Player1Points):- % simple move
+move_piece(Type, Piece, Board, X, Y, Nx, Ny, NewBoard):-
     nth1(Y, Board, Row1),
     replace(X, piece(empty), Row1, NewRow1),
     replace(Y, NewRow1, Board, MiddleBoard),
