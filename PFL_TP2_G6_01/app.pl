@@ -66,3 +66,25 @@ change_menu(2, human_bot):- game(hard).
 change_menu(3, human_bot):- play.
 
 change_menu(_, instructions):- play.
+
+/*
+* Prints the content of a file given by the Path:
+* read_from_file(+Path).
+*/
+read_from_file(Path):-
+    open(Path, read, Stream),
+    print_file(Stream),
+    close(Stream),
+    nl.
+
+/*
+* Reads and prints the content of a stream until the end:
+* read_from_file(+Path).
+*/
+print_file(Stream):-
+    peek_code(Stream,-1).
+
+print_file(Stream):-
+    get_char(Stream, Char),
+    write(Char),
+    print_file(Stream).

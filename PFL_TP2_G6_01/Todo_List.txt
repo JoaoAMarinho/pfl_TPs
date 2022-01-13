@@ -1,5 +1,3 @@
-move(+GameState, +Move, -NewGameState)
-: Validação e execução de uma jogada, obtendo o novo estado do jogo. 
 
 valid_moves(+GameState, -ListOfMoves)
 : Obtenção de lista com jogadas possíveis.
@@ -25,3 +23,6 @@ display_game(+GameState)
 choose_move(+GameState, +Level, -Move).
 : Escolha da jogada a efetuar pelo computador, dependendo do
 nível de dificuldade, através de um predicado
+
+move(+GameState, +Move, -NewGameState)
+: Validação e execução de uma jogada, obtendo o novo estado do jogo. 

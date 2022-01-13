@@ -77,8 +77,10 @@ code_to_int(Code, Int):-
 * converts to int and validates if in bounds:
 * get_x_cord(-Value).
 */
-get_x_cord(Value):-
-    read_alpha_char_between(65, 72, Code),
+get_x_cord(Value, Size):-
+    LowerBound is 65,
+    UpperBound is LowerBound + Size - 1,
+    read_alpha_char_between(LowerBound, UpperBound, Code),
     code_to_int(Code, Value).
 
 /*
@@ -86,25 +88,21 @@ get_x_cord(Value):-
 * validates if in bounds:
 * get_y_cord(-Value).
 */
-get_y_cord(Value):-
-    read_digit_between(1, 8, Value).
+get_y_cord(Value, Size):-
+    LowerBound is 1,
+    UpperBound is LowerBound + Size - 1,
+    read_digit_between(LowerBound, UpperBound, Value).
 
 /*
 * Reads input move:
 * read_move(-X, -Y, -Nx, -Ny).
 */
-read_move(X, Y, Nx, Ny):-
-    get_x_cord(X),
-    get_y_cord(YRead),
-    Y is 9 - YRead,
+read_move(X, Y, Nx, Ny, Size):-
+    get_x_cord(X, Size),
+    get_y_cord(YRead, Size),
+    Y is Size + 1 - YRead,
     read_specific_char('-'),
-    get_x_cord(Nx),
-    get_y_cord(NyRead),
-    Ny is 9 - NyRead,
+    get_x_cord(Nx, Size),
+    get_y_cord(NyRead, Size),
+    Ny is Size + 1 - NyRead,
     read_specific_char('\n').
-/*
-* Validates if Value is in board bounds:
-* in_bounds(+Value).
-*/
-in_bounds(Value):-
-    between(1,8, Value).
