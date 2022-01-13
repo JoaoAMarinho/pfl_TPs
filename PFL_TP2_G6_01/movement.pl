@@ -15,14 +15,14 @@ piece_directions(Vectors) :- Vectors = [(-1,-1),(-1,0),(0,-1),(-1,1),(1,-1),(0,1
 
 /*
 * Validates if a piece is in the given board at the specified coords: 
-* piece_in_board(+Board, +Type, +X, +Y).
+* piece_in_board(+Board, +Type, ?X, ?Y).
 */
 piece_in_board(Board, Type, X, Y):-
     nth1(Y, Board, Row),
-    \+nth1(X, Row, piece(Type)), !,
-    write('Incorrect position!\n'), fail.
+    nth1(X, Row, piece(Type)).
 
-piece_in_board(Board, Type, X, Y).
+piece_in_board(Board, Type, X, Y):- !, fail.
+    %write('Incorrect position!\n'), !, fail.
 
 /*
 * Validates if a certain move is possible: 
@@ -31,10 +31,10 @@ piece_in_board(Board, Type, X, Y).
 valid_piece_move(Type, Board, Size, X-Y-Nx-Ny):-
     piece_directions(Vectors),
     get_positions(Type, Board, Size, X, Y, Vectors, [], Positions),
-    member((Nx,Ny), Positions), !.
+    member((Nx,Ny), Positions).
 
-valid_piece_move(_, _, _, _):-
-    write('Invalid move!\n'), fail.
+valid_piece_move(_, _, _, _):- !, fail.
+    %write('Invalid move!\n'), !, fail.
 
 /*
 * Returns a list with possible board positions for piece:
@@ -111,7 +111,7 @@ move_piece(Type, Board, X-Y-Nx-Ny, NewBoard, Piece):-
     nth1(Ny, MiddleBoard, Row2),
     nth1(Nx, Row2, Piece),
     replace(Nx, piece(Type), Row2, NewRow2),
-    replace(Ny, NewRow2, MiddleBoard, NewBoard).
+    replace(Ny, NewRow2, MiddleBoard, NewBoard), !.
 
 /*
 find_move(easy, Board, X, Y, Nx, Ny, Piece):-
