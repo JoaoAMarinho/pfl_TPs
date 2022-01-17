@@ -101,9 +101,9 @@ print_line(Row, 2, 3, _):- write('      /_   '), print_cols(Row, 2, 3), !.
 print_line(Row, 1, 4, _):- write('      /|   '), print_cols(Row, 1, 4), !.
 print_line(Row, 1, 3, _):- write('       |   '), print_cols(Row, 1, 3), !.
 
-print_line(Row, 1, 1, _):- !.
+print_line(_, 1, 1, _):- !.
 
-print_line(Row, RowIndex, 1, Size):- 
+print_line(_, _, 1, Size):- 
     print_n_times(' ', 11), 
     print_n_times('|-----------|', Size), !.
 

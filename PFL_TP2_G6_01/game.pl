@@ -1,3 +1,5 @@
+:-use_module(library(random)).
+
 :- [parser].
 :- [game_view].
 :- [movement].
@@ -46,76 +48,102 @@ update_points(_, _, Points1, Points2, Points1, NewPoints2):-
 * game_over(+GameState, +Type).
 * GameState = Board-Size-Points1-Points2-Type
 */
-game_over(_-Size-Points1-Points2-_, samurai):-
+game_over(_-Size-Points1-_-_, samurai):-
     FinalPoints is ceiling(Size/2),
     Points1 == FinalPoints, !.
 
-game_over(_-Size-Points1-Points2-_, ninja):-
+game_over(_-Size-_-Points2-_, ninja):-
     FinalPoints is ceiling(Size/2),
     Points2 == FinalPoints, !.
 
 /*
 * Game cycle according to current mode:
-* game_cycle(+GameState, +P1, +P2)
+* game_cycle(+GameState, +Mode)
 * GameState = Board-Size-Points1-Points2-Type
 */
-game_cycle(Board-Size-P1-P2-Type, _, _):-
+game_cycle(Board-Size-P1-P2-Type, _):-
     game_over(Board-Size-P1-P2-Type, Winner), !,
     print_board(Board,Size),
     congratulate(Winner).
 
-game_cycle(GameState, P1, P2):-
+game_cycle(GameState, Mode):-
     display_game(GameState),
-    get_player_by_type(GameState, P1, P2, Player),
+    get_player_by_type(GameState, Mode, Player),
+    repeat,
     choose_move(GameState, Player, Move),
     move(GameState, Move, NewGameState), !,
-    game_cycle(NewGameState, P1, P2).
+    game_cycle(NewGameState, Mode).
 
 /*
 * Gets the player associated with the type Type:
-* get_player_by_type(+GameState, +P1, +P2, -P):- !.
+* get_player_by_type(+GameState, +Mode, -P):- !.
 * GameState = Board-Size-Points1-Points2-Type
 */
-get_player_by_type(_-_-_-_-samurai, P1, P2, P1):- !.
-get_player_by_type(_-_-_-_-ninja, P1, P2, P2).
+get_player_by_type(_-_-_-_-samurai, P1-_, P1):- !.
+get_player_by_type(_-_-_-_-ninja, _-P2, P2).
 
 /*
 * Human interaction to select move:
 * choose_move(+GameState, +Player, -Move)
 * GameState = Board-Size-Points1-Points2-Type
 */
-choose_move(Board-Size-P1-P2-Type, human, X-Y-Nx-Ny):-
+choose_move(_-Size-_-_-_, human, X-Y-Nx-Ny):-
     repeat,
-    read_move(X, Y, Nx, Ny, Size),
-    piece_in_board(Board, Type, X, Y),
-    valid_piece_move(Type, Board, Size, X-Y-Nx-Ny),!.
+    read_move(X, Y, Nx, Ny, Size), !.
 
 /*
 * Bot calculations to select move:
 * choose_move()
 * GameState = Board-Size-Points1-Points2-Type
 */
-/*BOT
+
 choose_move(GameState, computer-Level, Move):-
     valid_moves(GameState, Moves),
     choose_move(Level, GameState, Moves, Move).
-valid_moves(GameState, Moves):-
-findall(Move, move(GameState, Move, NewState), Moves).
-choose_move(1, _GameState, Moves, Move):-
-random_select(Move, Moves, _Rest).
-choose_move(2, GameState, Moves, Move):-
-setof(Value-Mv, NewState^( member(Mv, Moves),
-move(GameState, Mv, NewState),
-evaluate_board(NewState, Value) ), [_V-Move|_]).
-*/
 
+choose_move(1, _GameState, Moves, Move):-
+    random_select(Move, Moves, _Rest).
+
+choose_move(2, GameState, Moves, Move):-
+    setof(Value-Mv, (NewState, Player)^( member(Mv, Moves),
+        move(GameState, Mv, NewState),
+        value(NewState, Player, Value) ), [_V-Move|_]).
 /*
-* Performs a move:
-* move(+GameState, +Move, -NewGameState)
+
 * GameState = Board-Size-Points1-Points2-Type
 */
-move(Board-Size-Points1-Points2-Type, Move, NewGameState):-
-    move_piece(Type, Board, Move, NewBoard, Piece),
+valid_moves(GameState, Moves):-
+    findall(Move, move(GameState, Move, _), Moves), nl.
+
+/*
+
+* GameState = Board-Size-Points1-Points2-Type
+*/
+/*
+evaluate_board(_-_-P1-P2-_, _-_-NP1-NP2-_, samurai, Value):-
+    Delta is NP1-P1,
+    Delta > 0,
+    Value is Delta * (-2).
+
+evaluate_board(_-_-P1-P2-_, _-_-NP1-NP2-_, samurai, Value):-
+    value(_-_-P1-P2-_, samurai, Value).
+
+value(Board-Size-_-_-_, samurai, Value):-
+    can_attack(Board, samurai).
+*/
+value(_-_-P1-P2-_, samurai, Value):-
+    Value is P2-P1.
+value(_-_-P1-P2-_, ninja, Value):-
+    Value is P1-P2.
+/*
+* Performs a move:
+* move(+GameState, ?Move, -NewGameState)
+* GameState = Board-Size-Points1-Points2-Type
+*/
+move(Board-Size-Points1-Points2-Type, X-Y-Nx-Ny, NewGameState):-
+    piece_in_board(Board, Type, X, Y),
+    valid_piece_move(Type, Board, Size, X-Y-Nx-Ny),
+    move_piece(Type, Board, X-Y-Nx-Ny, NewBoard, Piece),
     update_points(Type, Piece, Points1, Points2, NewPoints1, NewPoints2),
     opponent(Type, Opponent),
     NewGameState = NewBoard-Size-NewPoints1-NewPoints2-Opponent.
@@ -130,8 +158,8 @@ initial_state(Size, Board-Size-0-0-samurai):-
 
 /*
 * Game starter:
-* game(+P1, +P2, +Size).
+* game(+Mode, +Size).
 */
-game(P1, P2, Size):- 
-    initial_state(Size, GameState), 
-    game_cycle(GameState, P1, P2).
+game(Mode, Size):- 
+    initial_state(Size, GameState), !, 
+    game_cycle(GameState, Mode).
