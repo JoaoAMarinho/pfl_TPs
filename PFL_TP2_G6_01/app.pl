@@ -8,6 +8,8 @@
 menu_path(play, Path):-         Path = './assets/menus/welcome_menu.txt'. 
 menu_path(instructions, Path):- Path = './assets/menus/instructions.txt'. 
 menu_path(human_bot, Path):-    Path = './assets/menus/human_bot.txt'. 
+menu_path(bot_bot, Path):-    Path = './assets/menus/bot_bot.txt'. 
+menu_path(size, Path):-    Path = './assets/menus/size_menu.txt'. 
 
 /*
 * Main menu handlers:
@@ -34,7 +36,7 @@ human_bot:-
     change_menu(Res, human_bot).
 
 bot_bot:-
-    display_menu(human_bot),
+    display_menu(bot_bot),
     repeat,
     read_digit_between(1, 3, Value),
     read_aux(Value, Res),
@@ -47,9 +49,7 @@ read_aux(V1, V1-V2):-
     read_specific_char('\n').
 
 size(Mode, Back):-
-    write(Mode), nl,
-    write('size (small,medium,big, back)'), nl,
-    %display_menu(size),
+    display_menu(size),
     repeat,
     read_digit_between(1, 4, Value),
     read_specific_char('\n'),
