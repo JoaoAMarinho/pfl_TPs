@@ -1,19 +1,19 @@
 :- [game].
-:-use_module(library(system)).
+:-use_module(library(file_systems)).
 
 /*
 * Returns path to file according to Menu:
 * menu_path(+Menu, -Path);
 */
-menu_path(play, Path):-         Path = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6_01/PFL_TP2_G6_01/assets/menus/welcome_menu.txt'. 
-menu_path(instructions, Path):- Path = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6_01/PFL_TP2_G6_01/assets/menus/instructions.txt'. 
-menu_path(human_bot, Path):-    Path = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6_01/PFL_TP2_G6_01/assets/menus/human_bot.txt'. 
+menu_path(play, Path):-         Path = './assets/menus/welcome_menu.txt'. 
+menu_path(instructions, Path):- Path = './assets/menus/instructions.txt'. 
+menu_path(human_bot, Path):-    Path = './assets/menus/human_bot.txt'. 
 
 /*
 * Main menu handlers:
 */ 
 play:-
-    %working_directory(V, './'),
+    current_directory(_, 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6_01/PFL_TP2_G6_01'),
     display_menu(play),
     repeat,
     read_digit_between(1, 5, Value),
