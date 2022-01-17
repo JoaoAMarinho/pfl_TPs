@@ -8,7 +8,7 @@ read_specific_char(Value):-
     get_char(Char),
     Value == Char, !.
 
-read_specific_char(Value):-
+read_specific_char(_):-
     skip_line,
     write('Invalid input!\n'), fail.
 

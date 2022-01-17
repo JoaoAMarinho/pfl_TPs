@@ -21,7 +21,7 @@ piece_in_board(Board, Type, X, Y):-
     nth1(Y, Board, Row),
     nth1(X, Row, piece(Type)).
 
-piece_in_board(Board, Type, X, Y):- !, fail.
+piece_in_board(_, _, _, _):- !, fail.
     %write('Incorrect position!\n'), !, fail.
 
 /*
@@ -64,7 +64,7 @@ get_positions_for_vector(Type, Board, Size, X, Y, Vector, Positions, Result):-  
 
 get_positions_for_vector(Type, Board, _, X, Y, Vector, Positions, Positions):-  % find opponent piece, stop search
     opponent(Type, Opponent),
-    verify_piece_in_new_position(X, Y, Vector, Board, Opponent, Nx, Ny), !.
+    verify_piece_in_new_position(X, Y, Vector, Board, Opponent, _, _), !.
 
 get_positions_for_vector(Type, Board, Size, X, Y, Vector, Positions, Result):-     % find friendly piece, continue search until opponent piece
     verify_piece_in_new_position(X, Y, Vector, Board, Type, Nx, Ny),
@@ -95,7 +95,7 @@ get_opponent_piece(Type, Board, Size, X, Y, Vector, Positions, Result):-        
 
 
 get_opponent_piece(Type, Board, _, X, Y, Vector, Positions, Positions):-              % find friendly piece, stop search
-    verify_piece_in_new_position(X, Y, Vector, Board, Type, Nx, Ny), !.
+    verify_piece_in_new_position(X, Y, Vector, Board, Type, _, _), !.
 
 get_opponent_piece(Type, Board, _, X, Y, Vector, Positions, [(Nx, Ny) | Positions]):- % find opponent piece, add position and stop search
     opponent(Type, Opponent),
@@ -114,17 +114,11 @@ move_piece(Type, Board, X-Y-Nx-Ny, NewBoard, Piece):-
     replace(Ny, NewRow2, MiddleBoard, NewBoard), !.
 
 /*
-find_move(easy, Board, X, Y, Nx, Ny, Piece):-
-get
-get_positions(Type, Board, X, Y, Vectors, [], Positions),
-    findall(Position, )*/
-
-/*
 * Replaces the Element in the list based on the Index:
 * replace(+Index, +Element, +List, -ResultingList).
 */    
 replace(_, _, [], []).
-replace(1, R, [H|T], [R|T]).
+replace(1, R, [_|T], [R|T]).
 replace(I, R, [H1|T1], [H1|T2]) :-
     NewI is I-1,
     replace(NewI, R, T1, T2).

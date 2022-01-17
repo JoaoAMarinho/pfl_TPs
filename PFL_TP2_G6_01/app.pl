@@ -1,4 +1,5 @@
 :- [game].
+:-use_module(library(system)).
 
 /*
 * Returns path to file according to Menu:
@@ -12,13 +13,12 @@ menu_path(human_bot, Path):-    Path = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL
 * Main menu handlers:
 */ 
 play:-
+    %working_directory(V, './'),
     display_menu(play),
     repeat,
     read_digit_between(1, 5, Value),
-    read_specific_char('/'),
-    read_digit_between(6, 8, Size),
     read_specific_char('\n'),
-    change_menu(Value, Size, play).
+    change_menu(Value, play).
 
 instructions:-
     display_menu(instructions),
@@ -30,15 +30,31 @@ human_bot:-
     display_menu(human_bot),
     repeat,
     read_digit_between(1, 3, Value),
-    read_specific_char('\n'),
-    change_menu(Value, human_bot).
+    read_aux(Value, Res),
+    change_menu(Res, human_bot).
 
-size(BoardSize, Mode):-
-    display_menu(size),
+bot_bot:-
+    display_menu(human_bot),
     repeat,
     read_digit_between(1, 3, Value),
+    read_aux(Value, Res),
+    change_menu(Res, bot_bot).
+
+read_aux(3, 3):- read_specific_char('\n').
+read_aux(V1, V1-V2):- 
+    read_specific_char('-'),
+    read_digit_between(1, 2, V2),
+    read_specific_char('\n').
+
+size(Mode, Back):-
+    write(Mode), nl,
+    write('size (small,medium,big, back)'), nl,
+    %display_menu(size),
+    repeat,
+    read_digit_between(1, 4, Value),
     read_specific_char('\n'),
-    change_menu(Value, human_bot).
+    start(Mode, Value, Back).
+
 exit:-
     clear_screen.
 
@@ -55,17 +71,29 @@ display_menu(Menu):-
 * Handles menu transition depending on the option choosen and the source menu:
 * change_menu(+Option, +From).
 */
-change_menu(1, play, Size):- game(pvp, pvp, Size).
+change_menu(1, play):- size(human-human, play).
 change_menu(2, play):- human_bot.
 change_menu(3, play):- bot_bot.
 change_menu(4, play):- instructions.
 change_menu(5, play):- exit.
 
-change_menu(1, human_bot):- size(BoardSize, human_bot).
-change_menu(2, human_bot):- game(hard).
 change_menu(3, human_bot):- play.
+change_menu(Level-1, human_bot):-  
+    size(human-(computer-Level), human_bot).
+change_menu(Level-2, human_bot):-  
+    size((computer-Level)-human, human_bot).
+
+change_menu(3, bot_bot):- play.
+change_menu(Level1-Level2, bot_bot):-  
+    size((computer-Level1)-(computer-Level2), bot_bot).
+
 
 change_menu(_, instructions):- play.
+
+start(_, 4, Back):- Back.
+start(Mode, Size, _):- 
+    RealSize is Size+5,
+    game(Mode, RealSize). 
 
 /*
 * Prints the content of a file given by the Path:

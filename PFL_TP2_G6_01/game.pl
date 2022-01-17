@@ -58,36 +58,36 @@ game_over(_-Size-_-Points2-_, ninja):-
 
 /*
 * Game cycle according to current mode:
-* game_cycle(+GameState, +P1, +P2)
+* game_cycle(+GameState, +Mode)
 * GameState = Board-Size-Points1-Points2-Type
 */
-game_cycle(Board-Size-P1-P2-Type, _, _):-
+game_cycle(Board-Size-P1-P2-Type, _):-
     game_over(Board-Size-P1-P2-Type, Winner), !,
     print_board(Board,Size),
     congratulate(Winner).
 
-game_cycle(GameState, P1, P2):-
+game_cycle(GameState, Mode):-
     display_game(GameState),
-    get_player_by_type(GameState, P1, P2, Player),
+    get_player_by_type(GameState, Mode, Player),
     repeat,
     choose_move(GameState, Player, Move),
     move(GameState, Move, NewGameState), !,
-    game_cycle(NewGameState, P1, P2).
+    game_cycle(NewGameState, Mode).
 
 /*
 * Gets the player associated with the type Type:
-* get_player_by_type(+GameState, +P1, +P2, -P):- !.
+* get_player_by_type(+GameState, +Mode, -P):- !.
 * GameState = Board-Size-Points1-Points2-Type
 */
-get_player_by_type(_-_-_-_-samurai, P1, P2, P1):- !.
-get_player_by_type(_-_-_-_-ninja, P1, P2, P2).
+get_player_by_type(_-_-_-_-samurai, P1-_, P1):- !.
+get_player_by_type(_-_-_-_-ninja, _-P2, P2).
 
 /*
 * Human interaction to select move:
 * choose_move(+GameState, +Player, -Move)
 * GameState = Board-Size-Points1-Points2-Type
 */
-choose_move(Board-Size-P1-P2-Type, human, X-Y-Nx-Ny):-
+choose_move(_-Size-_-_-_, human, X-Y-Nx-Ny):-
     repeat,
     read_move(X, Y, Nx, Ny, Size), !.
 
@@ -113,7 +113,7 @@ choose_move(2, GameState, Moves, Move):-
 * GameState = Board-Size-Points1-Points2-Type
 */
 valid_moves(GameState, Moves):-
-    findall(Move, move(GameState, Move, NewState), Moves), nl.
+    findall(Move, move(GameState, Move, _), Moves), nl.
 
 /*
 
@@ -158,8 +158,8 @@ initial_state(Size, Board-Size-0-0-samurai):-
 
 /*
 * Game starter:
-* game(+P1, +P2, +Size).
+* game(+Mode, +Size).
 */
-game(P1, P2, Size):- 
+game(Mode, Size):- 
     initial_state(Size, GameState), !, 
-    game_cycle(GameState, P1, P2).
+    game_cycle(GameState, Mode).
