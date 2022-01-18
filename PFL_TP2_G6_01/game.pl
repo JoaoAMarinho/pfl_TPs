@@ -107,7 +107,7 @@ choose_move(1, _GameState, Moves, Move):-
 choose_move(2, GameState, Moves, Move):-
     setof(Value-Mv, (NewState, Player)^( member(Mv, Moves),
         move(GameState, Mv, NewState),
-        value(NewState, Player, Value) ), [_V-Move|_]).
+        evaluate_board(GameState, NewState, Value)), [_V-Move|_]).
 /*
 
 * GameState = Board-Size-Points1-Points2-Type
@@ -119,22 +119,45 @@ valid_moves(GameState, Moves):-
 
 * GameState = Board-Size-Points1-Points2-Type
 */
-/*
-evaluate_board(_-_-P1-P2-_, _-_-NP1-NP2-_, samurai, Value):-
+evaluate_board(Board-Size-P1-P2-Player, NewGameState, Value):-
+    evaluate_board(Board-Size-P1-P2-Player, NewGameState, Player, Value).
+
+evaluate_board(_-_-P1-_-_, _-_-NP1-_-_, samurai, Value):-
     Delta is NP1-P1,
     Delta > 0,
-    Value is Delta * (-2).
+    Value = -10.
 
-evaluate_board(_-_-P1-P2-_, _-_-NP1-NP2-_, samurai, Value):-
-    value(_-_-P1-P2-_, samurai, Value).
+evaluate_board(_-_-_-P2-_, _-_-_-NP2-_, ninja, Value):-
+    Delta is NP2-P2,
+    Delta > 0,
+    Value = -10.
 
-value(Board-Size-_-_-_, samurai, Value):-
-    can_attack(Board, samurai).
-*/
+evaluate_board(_, NewGameState, Player, Value):-
+    value(NewGameState, Player, Value).
+
+value(GameState, Player, Value):-
+    opponent(Player, Opponent),
+    can_attack(GameState, Opponent),!, 
+    Value = 10.
+
+value(GameState, Player, Value):-
+    can_attack(GameState, Player),
+    Value = -5.
+
+value(_, _, 0).
+
+can_attack(Board-Size-_-_-_, Player):-
+    piece_in_board(Board, Player, X, Y),
+    valid_piece_move(Player, Board, Size, X-Y-Nx-Ny),
+    move_piece(Player, Board, X-Y-Nx-Ny, NewBoard, piece(Piece)),
+    opponent(Player, Piece).
+
+/*
 value(_-_-P1-P2-_, samurai, Value):-
     Value is P2-P1.
 value(_-_-P1-P2-_, ninja, Value):-
     Value is P1-P2.
+*/
 /*
 * Performs a move:
 * move(+GameState, ?Move, -NewGameState)
