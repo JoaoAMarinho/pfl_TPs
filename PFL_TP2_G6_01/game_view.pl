@@ -5,19 +5,22 @@ letters_path(Path):- Path = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6
 
 /*
 * Prints player turn message:
-* print_turn(+Type).
+* print_turn(+Type)
 */
 print_turn(samurai):- write('\nSamurais turn:\n').
 print_turn(ninja):-   write('\nNinjas turn:\n').
 
 /*
-* 
+* Prints winner message:
+* congratulate(+Type)
 */
 congratulate(samurai):- write('\nSamurais WON!\n').
 congratulate(ninja):-   write('\nNinjas WON!\n').
 
 /*
-* 
+* Displays the game, i.e. the board and the turn message, for the given game state:
+* display_game(+GameState)
+* GameState = Board-Size-Points1-Points2-Type
 */
 display_game(Board-Size-_-_-Type):-
     print_board(Board, Size),
@@ -25,7 +28,7 @@ display_game(Board-Size-_-_-Type):-
 
 /*
 * Prints the board given by Board:
-* print_board(+Board, +Size).
+* print_board(+Board, +Size)
 */ 
 print_board(Board, Size):-
     clear_screen,
@@ -35,15 +38,15 @@ print_board(Board, Size):-
 
 /*
 * Prints the top bar (i.e. the first line) of the board:
-* print_top_bar(Size).
+* print_top_bar(Size)
 */ 
 print_top_bar(Size):-
   print_n_times(' ', 11),
   print_n_times(' ___________ ', Size), nl.
 
 /*
-* Prints all rows from a board:
-* print_rows(+Board, +Size).
+* Prints all rows of a board:
+* print_rows(+Board, +Size)
 */
 print_rows(Board, Size):-
     print_rows(Board, Size, Size).
@@ -58,7 +61,7 @@ print_rows([Row|List], Index, Size):-
     
 /*
 * Prints all lines depending on the row:
-* print_lines(+Row, +RowIndex, +Size).
+* print_lines(+Row, +RowIndex, +Size)
 */
 print_lines(Row, RowIndex, Size):- 
     print_line(Row, RowIndex, 5, Size), nl,
@@ -69,7 +72,7 @@ print_lines(Row, RowIndex, Size):-
 
 /*
 * Prints a single line depending on the row and line index:
-* print_line(+Row, +RowIndex, +LineIndex, +Size).
+* print_line(+Row, +RowIndex, +LineIndex, +Size)
 */
 print_line(Row, 8, 5, _):- write('      _    '), print_cols(Row, 8, 5), !. 
 print_line(Row, 8, 4, _):- write('     (_)   '), print_cols(Row, 8, 4), !.
@@ -113,7 +116,7 @@ print_line(Row, RowIndex, LineIndex, _):-
 
 /*
 * Prints all columns of a row:
-* print_cols(+Pieces, +RowIndex, +LineIndex).
+* print_cols(+Pieces, +RowIndex, +LineIndex)
 */
 print_cols([Piece], RowIndex, LineIndex):-
     print_col(Piece, RowIndex, LineIndex).
@@ -124,7 +127,7 @@ print_cols([Piece|Pieces], RowIndex, LineIndex):-
 
 /*
 * Prints a column depending on the current piece:
-* print_col(+Piece, +RowIndex, +LineIndex).
+* print_col(+Piece, +RowIndex, +LineIndex)
 */
 print_col(piece(empty), 1, 2):- write('|___________|'), !.
 print_col(piece(empty), _, _):- write('|           |').
@@ -143,7 +146,7 @@ print_col(piece(ninja), _, 2):- write('|    / \\    |').
 
 /*
 * Prints a string/char n times to the output stream:
-* print_n_times(+Value, +Count).
+* print_n_times(+Value, +Count)
 */
 print_n_times(Value, N):-
     between(1, N, _T),
@@ -168,6 +171,6 @@ print_letters(8):-
 
 /*
 * Clears the screen:
-* clear_screen.
+* clear_screen
 */
 clear_screen:- write('\33\[2J').

@@ -8,13 +8,13 @@ opponent(samurai, ninja).
 opponent(ninja, samurai).
 
 /*
-* Indicates possible piece movement vectors: 
+* Possible piece movement vectors: 
 * piece_directions(-Vectors).
 */
 piece_directions(Vectors) :- Vectors = [(-1,-1),(-1,0),(0,-1),(-1,1),(1,-1),(0,1),(1,0),(1,1)].
 
 /*
-* Validates if a piece is in the given board at the specified coords: 
+* Validates if a piece is in the given board at the specified coordinates: 
 * piece_in_board(+Board, +Type, ?X, ?Y).
 */
 piece_in_board(Board, Type, X, Y):-
@@ -25,7 +25,7 @@ piece_in_board(_, _, _, _):- !, fail.
     %write('Incorrect position!\n'), !, fail.
 
 /*
-* Validates if a certain move is possible: 
+* Validates if a certain move is possible and valid: 
 * valid_piece_move(+Type, +Board, +Size, +Move).
 */
 valid_piece_move(Type, Board, Size, X-Y-Nx-Ny):-
@@ -37,7 +37,7 @@ valid_piece_move(_, _, _, _):- !, fail.
     %write('Invalid move!\n'), !, fail.
 
 /*
-* Returns a list with possible board positions for piece:
+* Returns a list with the possible board positions for a specific piece:
 * get_positions(+Type, +Board, +Size, +X, +Y, +Vectors, +InitialPositions, -Result).
 */
 get_positions(Type, Board, Size, X, Y, [Vector], Positions, NewPositions) :-
@@ -50,10 +50,10 @@ get_positions(Type, Board, Size, X, Y, [Vector|List], Positions, NewPositions):-
     get_positions(Type, Board, Size, X, Y, List, CurrPositions, NewPositions).
 
 /*
-* Returns a list with possible board positions by following a given vector:
-* get_positions_for_vector(+Type, +Board, +Size, +X, +Y, +Vector, +CurrentsPositions, -Result).
+* Returns a list with the possible board positions by following a given vector:
+* get_positions_for_vector(+Type, +Board, +Size, +X, +Y, +Vector, +CurrentPositions, -Result).
 */
-get_positions_for_vector(_, _,Size, X, Y, (Vx,Vy), Positions, Positions):-        % handle out of board
+get_positions_for_vector(_, _,Size, X, Y, (Vx,Vy), Positions, Positions):-         % handle out of board
     Nx is X+Vx,
     Ny is Y+Vy,
     out_of_bounds(Nx, Ny, Size), !.
@@ -62,7 +62,7 @@ get_positions_for_vector(Type, Board, Size, X, Y, Vector, Positions, Result):-  
     verify_piece_in_new_position(X, Y, Vector, Board, empty, Nx, Ny), !,
     get_positions_for_vector(Type, Board, Size, Nx, Ny, Vector, [(Nx, Ny) | Positions], Result).
 
-get_positions_for_vector(Type, Board, _, X, Y, Vector, Positions, Positions):-  % find opponent piece, stop search
+get_positions_for_vector(Type, Board, _, X, Y, Vector, Positions, Positions):-     % find opponent piece, stop search
     opponent(Type, Opponent),
     verify_piece_in_new_position(X, Y, Vector, Board, Opponent, _, _), !.
 
@@ -71,7 +71,7 @@ get_positions_for_vector(Type, Board, Size, X, Y, Vector, Positions, Result):-  
     get_opponent_piece(Type, Board, Size, Nx, Ny, Vector, Positions, Result).
 
 /*
-* Applies the vector to the given coords and verifies if a piece Type is in that board position:
+* Applies the vector to the given coordinates and verifies if the piece Type is in that board position:
 * verify_piece_in_new_position(+X, +Y, +Vector, +Board, +Type, -Nx, -Ny).
 */
 verify_piece_in_new_position(X, Y, (Vx, Vy), Board, Type, Nx, Ny):-
@@ -94,14 +94,14 @@ get_opponent_piece(Type, Board, Size, X, Y, Vector, Positions, Result):-        
     get_opponent_piece(Type, Board, Size, Nx, Ny, Vector, Positions, Result).
 
 
-get_opponent_piece(Type, Board, _, X, Y, Vector, Positions, Positions):-              % find friendly piece, stop search
+get_opponent_piece(Type, Board, _, X, Y, Vector, Positions, Positions):-                 % find friendly piece, stop search
     verify_piece_in_new_position(X, Y, Vector, Board, Type, _, _), !.
 
-get_opponent_piece(Type, Board, _, X, Y, Vector, Positions, [(Nx, Ny) | Positions]):- % find opponent piece, add position and stop search
+get_opponent_piece(Type, Board, _, X, Y, Vector, Positions, [(Nx, Ny) | Positions]):-    % find opponent piece, add position and stop search
     opponent(Type, Opponent),
     verify_piece_in_new_position(X, Y, Vector, Board, Opponent, Nx, Ny).
 /*
-* Performs a piece movement and returns the new board state:
+* Performs a piece movement and returns the new board state and the piece that was on that position before the move was executed:
 * move_piece(+Type, +Board, +X, +Y, +Nx, +Ny, -NewBoard).
 */
 move_piece(Type, Board, X-Y-Nx-Ny, NewBoard, Piece):-
@@ -124,7 +124,7 @@ replace(I, R, [H1|T1], [H1|T2]) :-
     replace(NewI, R, T1, T2).
 
 /*
-* Checks if position is out of bounds:
+* Checks if position is out of board bounds:
 * out_of_bounds(+x, +Y, +Size).
 */  
 out_of_bounds(X, Y, Size):-

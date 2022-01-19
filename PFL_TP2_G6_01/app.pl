@@ -3,7 +3,7 @@
 
 /*
 * Returns path to file according to Menu:
-* menu_path(+Menu, -Path);
+* menu_path(+Menu, -Path)
 */
 menu_path(play, Path):-         Path = './assets/menus/welcome_menu.txt'. 
 menu_path(instructions, Path):- Path = './assets/menus/instructions.txt'. 
@@ -55,12 +55,11 @@ size(Mode, Back):-
     read_specific_char('\n'),
     start(Mode, Value, Back).
 
-exit:-
-    clear_screen.
+exit:- clear_screen.
 
 /*
 * Display a certain Menu specified by its parameter:
-* display_menu(+Menu).
+* display_menu(+Menu)
 */ 
 display_menu(Menu):-
     clear_screen,
@@ -69,7 +68,7 @@ display_menu(Menu):-
 
 /*
 * Handles menu transition depending on the option choosen and the source menu:
-* change_menu(+Option, +From).
+* change_menu(+Option, +From)
 */
 change_menu(1, play):- size(human-human, play).
 change_menu(2, play):- human_bot.
@@ -90,6 +89,10 @@ change_menu(Level1-Level2, bot_bot):-
 
 change_menu(_, instructions):- play.
 
+/*
+* Stars a game
+* start(+Mode, +Size, _)
+*/
 start(_, 4, Back):- Back.
 start(Mode, Size, _):- 
     RealSize is Size+5,
@@ -97,7 +100,7 @@ start(Mode, Size, _):-
 
 /*
 * Prints the content of a file given by the Path:
-* read_from_file(+Path).
+* read_from_file(+Path)
 */
 read_from_file(Path):-
     open(Path, read, Stream),
@@ -107,7 +110,7 @@ read_from_file(Path):-
 
 /*
 * Reads and prints the content of a stream until the end:
-* read_from_file(+Path).
+* read_from_file(+Path)
 */
 print_file(Stream):-
     peek_code(Stream,-1).

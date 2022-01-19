@@ -13,7 +13,7 @@ read_specific_char(_):-
     write('Invalid input!\n'), fail.
 
 /*
-* Read digit between 2 values: 
+* Reads a digit between Min and Max values, including: 
 * read_digit_between(+Min, +Max, -Value).
 */
 read_digit_between(Min, Max, Value):-
@@ -25,7 +25,7 @@ read_digit_between(_, _, _):-
     skip_line, 
     write('Invalid input!\n'), fail.    
 /*
-* Read digit from input stream: 
+* Reads a digit from input stream: 
 * read_digit(-Value).
 */
 read_digit(_):-
@@ -38,7 +38,7 @@ read_digit(Value):-
     Value is Ascii - AsciiZero.
 
 /*
-* Read alphabetic char between 2 values: 
+* Reads an alphabetic char between Min and Max values, including: 
 * read_alpha_char_between(+Min, +Max, -Value).
 */
 read_alpha_char_between(Min, Max, Value):-
@@ -51,7 +51,7 @@ read_alpha_char_between(_, _, _):-
     write('Invalid input!\n'), fail. 
 
 /*
-* Read alphabetic char from input stream (returns uppercase code value): 
+* Reads an alphabetic char from input stream, returning the correspondent uppercase code value: 
 * read_alpha_char(-Value).
 */
 read_alpha_char(Value):- % Uppercase Character
@@ -66,15 +66,14 @@ read_alpha_char(Value):- % Lowercase Character
     Value is Code - 32.
 
 /*
-* Convert code to int starting from 'A': 
+* Converts an ascii code to correspondent int, starting from 'A': 
 * code_to_int(+Code, -Int).
 */
 code_to_int(Code, Int):-
     Int is Code-64.
 
 /*
-* Reads alphabetic char from input stream and
-* converts to int and validates if in bounds:
+* Reads an alphabetic char from input stream, converts it to int and validates if it is in bounds:
 * get_x_cord(-Value).
 */
 get_x_cord(Value, Size):-
@@ -84,8 +83,7 @@ get_x_cord(Value, Size):-
     code_to_int(Code, Value).
 
 /*
-* Reads digit from input stream and
-* validates if in bounds:
+* Reads a digit from input stream and validates if it is in bounds:
 * get_y_cord(-Value).
 */
 get_y_cord(Value, Size):-
@@ -94,7 +92,7 @@ get_y_cord(Value, Size):-
     read_digit_between(LowerBound, UpperBound, Value).
 
 /*
-* Reads input move:
+* Reads an input move:
 * read_move(-X, -Y, -Nx, -Ny).
 */
 read_move(X, Y, Nx, Ny, Size):-
