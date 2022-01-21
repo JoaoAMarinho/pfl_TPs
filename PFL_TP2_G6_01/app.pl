@@ -5,7 +5,7 @@
 * Returns path to file according to Menu:
 * menu_path(+Menu, -Path)
 */
-menu_path(play, Path):-         Path = './assets/menus/welcome_menu.txt'. 
+menu_path(main, Path):-         Path = './assets/menus/welcome_menu.txt'. 
 menu_path(instructions, Path):- Path = './assets/menus/instructions.txt'. 
 menu_path(human_bot, Path):-    Path = './assets/menus/human_bot.txt'. 
 menu_path(bot_bot, Path):-    Path = './assets/menus/bot_bot.txt'. 
@@ -13,14 +13,17 @@ menu_path(size, Path):-    Path = './assets/menus/size_menu.txt'.
 
 /*
 * Main menu handlers:
-*/ 
+*/
 play:-
     current_directory(_, 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6_01/PFL_TP2_G6_01'),
-    display_menu(play),
+    main.
+
+main:-
+    display_menu(main),
     repeat,
     read_digit_between(1, 5, Value),
     read_specific_char('\n'),
-    change_menu(Value, play).
+    change_menu(Value, main).
 
 instructions:-
     display_menu(instructions),
@@ -70,24 +73,24 @@ display_menu(Menu):-
 * Handles menu transition depending on the option choosen and the source menu:
 * change_menu(+Option, +From)
 */
-change_menu(1, play):- size(human-human, play).
-change_menu(2, play):- human_bot.
-change_menu(3, play):- bot_bot.
-change_menu(4, play):- instructions.
-change_menu(5, play):- exit.
+change_menu(1, main):- size(human-human, main).
+change_menu(2, main):- human_bot.
+change_menu(3, main):- bot_bot.
+change_menu(4, main):- instructions.
+change_menu(5, main):- exit.
 
-change_menu(3, human_bot):- play.
+change_menu(3, human_bot):- main.
 change_menu(Level-1, human_bot):-  
     size(human-(computer-Level), human_bot).
 change_menu(Level-2, human_bot):-  
     size((computer-Level)-human, human_bot).
 
-change_menu(3, bot_bot):- play.
+change_menu(3, bot_bot):- main.
 change_menu(Level1-Level2, bot_bot):-  
     size((computer-Level1)-(computer-Level2), bot_bot).
 
 
-change_menu(_, instructions):- play.
+change_menu(_, instructions):- main.
 
 /*
 * Stars a game

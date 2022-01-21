@@ -109,7 +109,7 @@ choose_move(1, _GameState, Moves, Move):-
     random_select(Move, Moves, _Rest).
 
 choose_move(2, GameState, Moves, Move):-
-    setof(Value-Mv, (NewState, Player)^( member(Mv, Moves),
+    setof(Value-Mv, (NewState)^( member(Mv, Moves),
         move(GameState, Mv, NewState),
         evaluate_board(GameState, NewState, Value)), [_V-Move|_]).
 /*
@@ -166,7 +166,7 @@ value(_, _, 0).
 can_attack(Board-Size-_-_-_, Player):-
     piece_in_board(Board, Player, X, Y),
     valid_piece_move(Player, Board, Size, X-Y-Nx-Ny),
-    move_piece(Player, Board, X-Y-Nx-Ny, NewBoard, piece(Piece)),
+    move_piece(Player, Board, X-Y-Nx-Ny, _, piece(Piece)),
     opponent(Player, Piece).
 
 /*
