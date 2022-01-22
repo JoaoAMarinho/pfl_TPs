@@ -16,7 +16,7 @@ build_board(Size, Board):-
 
 /*
 * Builds n rows of the board:
-* build_n_rows(+NumRows, +Size, +Type, +Rows, -Rows)
+* build_n_rows(+NumRows, +Size, +Type, +Rows, -Result)
 */
 build_n_rows(0, _, _, Rows, Rows).
 build_n_rows(NumRows, RowSize, Type, Rows, Res):-
@@ -26,7 +26,7 @@ build_n_rows(NumRows, RowSize, Type, Rows, Res):-
 
 /*
 * Builds a row of the board:
-* build_row(+RowSize, +Type, +Row, -Row)
+* build_row(+RowSize, +Type, +Row, -Result)
 */
 build_row(0, _, Row, Row).
 build_row(RowSize, Type, Row, Res):-
@@ -34,7 +34,7 @@ build_row(RowSize, Type, Row, Res):-
     build_row(NewRowSize, Type, [piece(Type)|Row], Res).
 
 /*
-* Updates points accordingly to piece movement:
+* Updates points according to piece movement:
 * update_points(+Type, +Piece, +Points1, +Points2, -NewPoints1, -NewPoints2)
 */
 update_points(_, piece(empty), Points1, Points2, Points1, Points2):- !.
@@ -57,7 +57,7 @@ game_over(_-Size-_-Points2-_, ninja):-
     Points2 == FinalPoints, !.
 
 /*
-* Game cycle according to current mode:
+* Game cycle according to mode:
 * game_cycle(+GameState, +Mode)
 * GameState = Board-Size-Points1-Points2-Type
 */
@@ -75,8 +75,8 @@ game_cycle(GameState, Mode):-
     game_cycle(NewGameState, Mode).
 
 /*
-* Gets the player associated with the type Type:
-* get_player_by_type(+GameState, +Mode, -P)
+* Returns the player associated with the type Type:
+* get_player_by_type(+GameState, +Mode, -Player)
 * GameState = Board-Size-Points1-Points2-Type
 */
 get_player_by_type(_-_-_-_-samurai, P1-_, P1):- !.
@@ -101,7 +101,7 @@ choose_move(GameState, computer-Level, Move):-
     choose_move(Level, GameState, Moves, Move).
 
 /*
-* Bot calculations to select move:
+* Bot calculations to select move from Moves:
 * choose_move(+Level, +GameState, +Moves, -Move)
 * GameState = Board-Size-Points1-Points2-Type
 */
@@ -143,7 +143,7 @@ evaluate_board(_, NewGameState, Player, Value):-
     value(NewGameState, Player, Value).
 
 /*
-* Calculates the value (worth) of the given game state, taking some heuristics into consideration:
+* Calculates the value (worth) of the given game state, in the Player prespective, taking some heuristics into consideration:
 * value(+GameState, +Player, -Value)
 * GameState = Board-Size-Points1-Points2-Type
 */

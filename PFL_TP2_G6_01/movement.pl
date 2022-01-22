@@ -25,8 +25,7 @@ piece_in_board(_, _, _, _):- !, fail.
 
 /*
 * Validates if a certain move is possible and valid:
-* Move: X-Y-Nx-Ny, where X and Y are necessary, whereas Nx and Ny
-* can be instanciated or not 
+* Move: X-Y-Nx-Ny, where X and Y are necessary, whereas Nx and Ny can be instanciated or not 
 * valid_piece_move(+Type, +Board, +Size, ?Move).
 */
 valid_piece_move(Type, Board, Size, X-Y-Nx-Ny):-

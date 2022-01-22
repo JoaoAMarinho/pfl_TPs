@@ -5,11 +5,11 @@
 * Returns path to file according to Menu:
 * menu_path(+Menu, -Path)
 */
-menu_path(main, Path):-         Path = './assets/menus/welcome_menu.txt'. 
-menu_path(instructions, Path):- Path = './assets/menus/instructions.txt'. 
-menu_path(human_bot, Path):-    Path = './assets/menus/human_bot.txt'. 
-menu_path(bot_bot, Path):-    Path = './assets/menus/bot_bot.txt'. 
-menu_path(size, Path):-    Path = './assets/menus/size_menu.txt'. 
+menu_path(main, Path):-         Path = './menus/welcome_menu.txt'. 
+menu_path(instructions, Path):- Path = './menus/instructions.txt'. 
+menu_path(human_bot, Path):-    Path = './menus/human_bot.txt'. 
+menu_path(bot_bot, Path):-      Path = './menus/bot_bot.txt'. 
+menu_path(size, Path):-         Path = './menus/size_menu.txt'. 
 
 /*
 * Main menu handlers:
@@ -70,7 +70,7 @@ display_menu(Menu):-
     read_from_file(Path).
 
 /*
-* Handles menu transition depending on the option choosen and the source menu:
+* Handles menu transitions depending on the option choosen and the source menu:
 * change_menu(+Option, +From)
 */
 change_menu(1, main):- size(human-human, main).
@@ -89,17 +89,16 @@ change_menu(3, bot_bot):- main.
 change_menu(Level1-Level2, bot_bot):-  
     size((computer-Level1)-(computer-Level2), bot_bot).
 
-
 change_menu(_, instructions):- main.
 
 /*
-* Stars a game
-* start(+Mode, +Size, _)
+* Stars a game, with the specified Mode and Size:
+* start(+Mode, +Value, +Back)
 */
 start(_, 4, Back):- Back.
-start(Mode, Size, _):- 
-    RealSize is Size+5,
-    game(Mode, RealSize). 
+start(Mode, Value, _):- 
+    Size is Value + 5,
+    game(Mode, Size). 
 
 /*
 * Prints the content of a file given by the Path:
@@ -113,7 +112,7 @@ read_from_file(Path):-
 
 /*
 * Reads and prints the content of a stream until the end:
-* read_from_file(+Path)
+* print_file(+Stream)
 */
 print_file(Stream):-
     peek_code(Stream,-1).

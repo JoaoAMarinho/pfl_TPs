@@ -95,7 +95,7 @@ bot_bot:-
 
 #### TABULEIRO
 
-Em situação de jogo, a interação com o utlizador, se aplicável, é feita com recurso ao predicado `choose_move(+GameState, +Player, -Move)`, que recebe o atual estado do jogo - `GameState`, o tipo de jogador com a vez de jogar - `Player` e retorna em `Move` o _move_ selecionado pelo utilizador, no formato `[coordenada x de origem]-[coordenada y de origem]/[coordenada x de destino]-[coordenada y de destino]`. A validação do _input_ de jogada, apenas no que toca ao formato e à verificação de se as coordenadas se encontram dentro dos limites do tabuleiro, é feita pelo predicado `read_move(-X, -Y, -Nx, -Ny, +Size)`, cujo funcionamento é muito semelhante ao já explicado para os menus.
+Em situação de jogo, a interação com o utlizador, se aplicável, é feita com recurso ao predicado `choose_move(+GameState, +Player, -Move)`, que recebe o atual estado do jogo - `GameState`, o tipo de jogador com a vez de jogar - `Player` e retorna em `Move` o _move_ selecionado pelo utilizador, no formato `[coordenada x de origem][coordenada y de origem]-[coordenada x de destino][coordenada y de destino]`. A validação do _input_ de jogada, apenas no que toca ao formato e à verificação de se as coordenadas se encontram dentro dos limites do tabuleiro, é feita pelo predicado `read_move(-X, -Y, -Nx, -Ny, +Size)`, cujo funcionamento é muito semelhante ao já explicado para os menus.
 
 Já a validação da jogada, no que toca a se esta pode ser levada a cabo ou não, e a sua efetivação são feitas pelo predicado `move(+GameState, ?Move, -NewGameState)`, o qual será explicado com mais detalhe na secção abaixo.
 
@@ -135,9 +135,86 @@ No caso de se tratar do final do jogo, é mostrado uma última vez o tabuleiro (
 
 ### Lista de Jogadas Válidas
 
+A lista de jogadas válidas é gerada pelo predicado `valid_moves(+GameState, -Moves)` que, considerando o atual estado do jogo, corre o predicado `findall` com `move`, cuja implementação está explicada acima.
+
 ### Avaliação do Estado do Jogo
 
+O predicado `evaluate_board(+GameState, +NewGameState, -Value)` atribui um valor a um estado de jogo com base em duas heurísticas distintas:
+
+- o jogador marca ponto ao executar o _move_ que resulta no `NewGameState`? 
+- o jogador pode sofrer um ataque nas condições do `NewGameState`?
+- o jogador pode atacar nas condições do `NewGameState`?
+
+Note-se que uma jogada mais valiosa é aquela com um menor valor de `Value`.
+
+- marca ponto com a jogada? `Value = -10`
+- pode ser atacado nas condições do novo estado de jogo? `Value = 10`
+- pode atacar nas condições do novo estado de jogo? `Value = -5`
+- nenhum dos cenários se aplica? `Value = 0`
+
+~~~
+/* -------------------------------------------------------- */
+
+evaluate_board(_-_-P1-_-_, _-_-NP1-_-_, samurai, Value):-
+    Delta is NP1-P1,
+    Delta > 0,
+    Value = -10.
+
+evaluate_board(_-_-_-P2-_, _-_-_-NP2-_, ninja, Value):-
+    Delta is NP2-P2,
+    Delta > 0,
+    Value = -10.
+
+evaluate_board(_, NewGameState, Player, Value):-
+    value(NewGameState, Player, Value).
+
+/* -------------------------------------------------------- */
+
+value(GameState, Player, Value):-
+    opponent(Player, Opponent),
+    can_attack(GameState, Opponent),!, 
+    Value = 10.
+
+value(GameState, Player, Value):-
+    can_attack(GameState, Player),
+    Value = -5.
+
+value(_, _, 0).
+
+/* -------------------------------------------------------- */
+
+can_attack(Board-Size-_-_-_, Player):-
+    piece_in_board(Board, Player, X, Y),
+    valid_piece_move(Player, Board, Size, X-Y-Nx-Ny),
+    move_piece(Player, Board, X-Y-Nx-Ny, _, piece(Piece)),
+    opponent(Player, Piece).
+~~~
+
+O predicado `can_attack(+GameState, +Player)` verifica se, de acordo com o `GameState`, é possível a um jogador atacar ou sofrer um ataque. Fá-lo simulando a execução de jogadas até obter uma tal que o valor em `Piece`, retornado pelo predicado `move_piece(+Type, +Board, +Move, -NewBoard, -Piece)`, faz _matching_ com o do seu oponente.
+
 ### Jogada do Computador
+
+A seleção da jogada é feita através do predicado `choose_move(+GameState, +Player, -Move)`.
+
+Para um jogador humano, este predicado apenas recebe o _input_ de jogada introduzido, validando-o no que toca ao formato e à verificação de se as coordenadas inseridas se encontram dentro dos limites do tabuleiro, tal como já fora explicado acima.
+
+Já para um jogador artificial, este predicado chama um outro semelhante - `choose_move(+Level, +GameState, +Moves, -Move)`, que retorna em `Move` o _move_ escolhido com base em critérios que variam consoante a dificuldade `Level` selecionada.
+
+No nível de dificuldade 1, a escolha é aleatória:
+
+~~~
+choose_move(1, _GameState, Moves, Move):-
+    random_select(Move, Moves, _Rest).
+~~~
+
+No nível de dificuldade 2, a escolha é feita com base no predicado `evaluate_board(+GameState, +NewGameState, -Value)`, explicado na secção imediatamente acima, que retorna em `Value` o valor do novo estado de jogo.
+
+~~~
+choose_move(2, GameState, Moves, Move):-
+    setof(Value-Mv, (NewState)^( member(Mv, Moves),
+        move(GameState, Mv, NewState),
+        evaluate_board(GameState, NewState, Value)), [_V-Move|_]).
+~~~
 
 ## Conclusões
 

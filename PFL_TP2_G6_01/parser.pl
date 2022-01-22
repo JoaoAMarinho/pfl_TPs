@@ -1,7 +1,7 @@
 :-use_module(library(between)).
 
 /*
-* Tries to read a specific char: 
+* Tries to read a specific char:
 * read_specific_char(+Value).
 */
 read_specific_char(Value):-
@@ -66,7 +66,7 @@ read_alpha_char(Value):- % Lowercase Character
     Value is Code - 32.
 
 /*
-* Converts an ascii code to correspondent int, starting from 'A': 
+* Converts an ascii code to correspondent index, starting from 'A': 
 * code_to_int(+Code, -Int).
 */
 code_to_int(Code, Int):-

@@ -1,14 +1,12 @@
 
 :-use_module(library(between)).
 
-letters_path(Path):- Path = 'D:/Escola/Faculdade/3_Ano/1_Semestre/PFL/PFL_TPs_G6_01/PFL_TP2_G6_01/assets/board_letters.txt'. 
-
 /*
 * Prints player turn message:
 * print_turn(+Type)
 */
-print_turn(samurai):- write('\nSamurais turn:\n').
-print_turn(ninja):-   write('\nNinjas turn:\n').
+print_turn(samurai):- write('\nSamurais turn ([source x][source y]-[x dest][y dest]):\n').
+print_turn(ninja):-   write('\nNinjas turn ([source x][source y]-[x dest][y dest]):\n').
 
 /*
 * Prints winner message:
@@ -38,7 +36,7 @@ print_board(Board, Size):-
 
 /*
 * Prints the top bar (i.e. the first line) of the board:
-* print_top_bar(Size)
+* print_top_bar(+Size)
 */ 
 print_top_bar(Size):-
   print_n_times(' ', 11),
