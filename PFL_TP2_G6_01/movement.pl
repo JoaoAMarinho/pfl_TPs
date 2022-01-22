@@ -22,11 +22,12 @@ piece_in_board(Board, Type, X, Y):-
     nth1(X, Row, piece(Type)).
 
 piece_in_board(_, _, _, _):- !, fail.
-    %write('Incorrect position!\n'), !, fail.
 
 /*
-* Validates if a certain move is possible and valid: 
-* valid_piece_move(+Type, +Board, +Size, +Move).
+* Validates if a certain move is possible and valid:
+* Move: X-Y-Nx-Ny, where X and Y are necessary, whereas Nx and Ny
+* can be instanciated or not 
+* valid_piece_move(+Type, +Board, +Size, ?Move).
 */
 valid_piece_move(Type, Board, Size, X-Y-Nx-Ny):-
     piece_directions(Vectors),
@@ -34,7 +35,6 @@ valid_piece_move(Type, Board, Size, X-Y-Nx-Ny):-
     member((Nx,Ny), Positions).
 
 valid_piece_move(_, _, _, _):- !, fail.
-    %write('Invalid move!\n'), !, fail.
 
 /*
 * Returns a list with the possible board positions for a specific piece:
@@ -102,7 +102,7 @@ get_opponent_piece(Type, Board, _, X, Y, Vector, Positions, [(Nx, Ny) | Position
     verify_piece_in_new_position(X, Y, Vector, Board, Opponent, Nx, Ny).
 /*
 * Performs a piece movement and returns the new board state and the piece that was on that position before the move was executed:
-* move_piece(+Type, +Board, +X, +Y, +Nx, +Ny, -NewBoard).
+* move_piece(+Type, +Board, +Move, -NewBoard, -Piece).
 */
 move_piece(Type, Board, X-Y-Nx-Ny, NewBoard, Piece):-
     nth1(Y, Board, Row1),

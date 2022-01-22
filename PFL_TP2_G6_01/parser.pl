@@ -93,7 +93,7 @@ get_y_cord(Value, Size):-
 
 /*
 * Reads an input move:
-* read_move(-X, -Y, -Nx, -Ny).
+* read_move(-X, -Y, -Nx, -Ny, +Size).
 */
 read_move(X, Y, Nx, Ny, Size):-
     get_x_cord(X, Size),
