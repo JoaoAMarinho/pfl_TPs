@@ -86,7 +86,21 @@ Por último, o predicado de visualização geral do jogo é o `display_game(Game
 
 ### Execução de Jogadas
 
+A validação e execução de uma jogada, obtendo o novo estado do jogo, está a cargo do predicado `move(GameState, Move, NewGameState)`.
+
+Este predicado está estruturado na chamada aos seguintes predicados:
+
+  - `piece_in_board(Board, Type, X, Y)`, que verifica se nas coordenadas X e Y de origem se encontra efetivamente uma peça pertencente ao jogador;
+
+  - `valid_piece_move(Type, Board, Size, Move)`, que faz a validação da jogada, verificando se o _move_ requerido é um dos _moves_ permitidos para as coordenadas de origem selecionadas (o funcionamento deste predicado será explicado com mais detalhe na secção **Lista de Jogadas Válidas**);
+
+  - `move_piece(Type, Board, Move, NewBoard, Piece)`, que efetiva a execução da jogada, retornando em `Piece` a peça que estava nas coordenadas de destino para as quais o jogador moveu uma das suas peças;
+
+  - update_points(Type, Piece, Points1, Points2, NewPoints1, NewPoints2), que atualiza os pontos de cada um dos jogadores, valores esses que são retornados em `NewPoints1` e `NewPoints2`, correspondentes, respetivamente, aos pontos do primeiro jogador e do segundo jogador.
+
 ### Final do Jogo
+
+
 
 ### Lista de Jogadas Válidas:
 
@@ -99,5 +113,7 @@ Por último, o predicado de visualização geral do jogo é o `display_game(Game
 ## Bibliografia
 
 ## Trabalho realizado por:
+
 - João Marinho (up201905952) - 55%
+
 - Margarida Vieira (up201907907) - 45%
