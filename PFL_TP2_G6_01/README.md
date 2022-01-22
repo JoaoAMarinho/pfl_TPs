@@ -1,5 +1,7 @@
 # Shi
 
+## Instalação e execução
+
 ## Descrição 
 
 Em japonês, a palavra "shi" pode significar, dependendo do contexto, o número 4 ou a palavra "morte". Daí, no Japão, o número 4 ser considerado o número azarento. 
@@ -25,8 +27,77 @@ As capturas são feitas com _jump attacks_, que consistem em saltar por cima de 
 - podem existir 0 ou mais casas entre a peça capturada e a peça sobre a qual ocorre o salto
 - um jogador perde quando reduzido a 4 peças
 
+## Lógica do Jogo
 
+### Representação interna do estado do jogo
+
+O estado do jogo é representado por uma variável composta com a seguinte estrutura: `Board-Size-Points1-Points2-Type`
+
+`Board` - lista de listas, com átomos do tipo `piece(empty)`, `piece(samurai)` ou `piece(ninja)`, que representam, intuitiva e respetivamente, uma peça vazia, uma peça samurai e uma peça ninja;
+
+`Size` - tamanho do tabuleiro, escolhido pelo o utilizador;
+
+`Points1` - pontos do primeiro jogador, no estado atual;
+
+`Points2` - pontos do segundo jogador, no estado atual;
+
+`Type` - tipo de peça, `piece(samurai)` ou `piece(ninja)`, a ser jogada pelo jogador que tem a vez de jogar no estado atual.
+
+### Visualização do estado de jogo
+
+#### MENUS
+
+A interação programa - utilizador inicia-se nos menus, nos quais vai sendo pedida ao utilizador que selecione um conjunto de informação necessária à inicialização do estado do jogo.
+
+A transição entre menus é feita com recurso ao predicado `change_menu`, que implementa uma máquina de estados tal que, em função da opção selecionada pelo utilizador e do menu onde este se encontra no momento dessa seleção, sabe qual o menu que se segue.
+
+Nos menus, a interação com o utilizador começa com o predicado `display_menu`, que recebe um menu como parâmetro e sabe qual o ficheiro que há a ser lido para efetuar o respetivo display. No que toca a validação de _inputs_, dado que o conceito de _input_ válido varia conforme o menu em questão, os predicados que implementam esta funcionalidade são chamados, da forma adequada, no predicado de cada menu em específico.
+
+Por exemplo, no menu `main`, o utlizador apenas tem que introduzir um dígito, de 1 a 5 - `read_digit_between(1, 5, Value)` e pressionar _enter_ - `read_specific_char('\n')`.
+
+~~~
+main:-
+    display_menu(main),
+    repeat,
+    read_digit_between(1, 5, Value),
+    read_specific_char('\n'),
+    change_menu(Value, main).
+~~~
+
+Já no menu `bot-bot`, o utlizador tem que introduzir um dígito, de 1 a 3 - `read_digit_between(1, 3, Value)`, correspondente à dificuldade ou, no caso do 3, à opção de voltar atrás, e um '-', seguido de um dígito de 1 a 2, para indicar qual será o primeiro jogador a jogar e pressionar enter - `read_aux(Value, Res)`. Este último predicado foi implementado para lidar com o facto de existirem, neste menu e não só, dois cenários válidos de _input_ - aquele em que o utilizador pretende voltar para trás e, como tal, apenas introduz a entrada do menu correspondente e pressiona _enter_ e aquele em que o utilizador seleciona o nível e o primeiro jogador, separados pelo caracter referido, e pressiona 
+ para confirmar a sua escolha.
+
+~~~
+bot_bot:-
+    display_menu(bot_bot),
+    repeat,
+    read_digit_between(1, 3, Value),
+    read_aux(Value, Res),
+    change_menu(Res, bot_bot).
+~~~
+
+#### TABULEIRO
+
+Em situação de jogo, a interação com o utlizador, se aplicável, é feita com recurso ao predicado `choose_move(GameState, Player, Move)`, que recebe o atual estado do jogo - `GameState`, o jogador com a vez de jogar - `Player` e retorna em `Move` o _move_ selecionado pelo utilizador, no formato `[coordenada x de origem]-[coordenada y de origem]/[coordenada x de destino]-[coordenada y de destino]`. A validação do _input_ de jogada, apenas no que toca ao formato e à verificação de se as coordenadas se encontram dentro dos limites do tabuleiro, é feita pelo predicado `read_move(X, Y, Nx, Ny, Size)`, cujo funcionamento é muito semelhante ao já explicado para os menus.
+
+Já a validação da jogada, no que toca a se esta pode ser levada a cabo ou não, e a sua efetivação são feitas pelo predicado `move(GameState, Move, NewGameState)`, o qual será explicado com mais detalhe na secção abaixo.
+
+Por último, o predicado de visualização geral do jogo é o `display_game(GameState)`, que recebe o estado atual do jogo para dar _display_. Este predicado divide essa tarefa por outros dois predicados, `print_turn(Board, Size)` e `print_turn(Type)`, que fazem, respetivamente, o _display_ do tabuleiro e o _display_ de uma mensagem indicativa do jogador que tem a vez de jogar.
+
+### Execução de Jogadas
+
+### Final do Jogo
+
+### Lista de Jogadas Válidas:
+
+### Avaliação do Estado do Jogo
+
+### Jogada do Computador
+
+## Conclusões
+
+## Bibliografia
 
 ## Trabalho realizado por:
-- João Marinho (up201905952)
-- Margarida Vieira (up201907907)
+- João Marinho (up201905952) - 55%
+- Margarida Vieira (up201907907) - 45%
