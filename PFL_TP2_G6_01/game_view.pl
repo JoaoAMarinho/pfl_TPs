@@ -12,8 +12,8 @@ print_turn(ninja):-   write('\nNinjas turn ([source x][source y]-[x dest][y dest
 * Prints winner message:
 * congratulate(+Type)
 */
-congratulate(samurai):- write('\nSamurais WON!\n').
-congratulate(ninja):-   write('\nNinjas WON!\n').
+congratulate(samurai):- write('\nGOOD JOB! Samurais have WON!\n(Press any key to continue)\n').
+congratulate(ninja):-   write('\nGOOD JOB! Ninjas have WON!\n(Press any key to continue)\n').
 
 /*
 * Displays the game, i.e. the board and the turn message, for the given game state:

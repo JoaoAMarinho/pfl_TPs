@@ -1,4 +1,5 @@
 :-use_module(library(random)).
+:-use_module(library(system)).
 
 :- [parser].
 :- [game_view].
@@ -64,7 +65,8 @@ game_over(_-Size-_-Points2-_, ninja):-
 game_cycle(Board-Size-P1-P2-Type, _):-
     game_over(Board-Size-P1-P2-Type, Winner), !,
     print_board(Board,Size),
-    congratulate(Winner).
+    congratulate(Winner),
+    peek_code(_), skip_line.
 
 game_cycle(GameState, Mode):-
     display_game(GameState),
@@ -97,6 +99,8 @@ choose_move(_-Size-_-_-_, human, X-Y-Nx-Ny):-
 * GameState = Board-Size-Points1-Points2-Type
 */
 choose_move(GameState, computer-Level, Move):-
+    write('\nThe bot is thinking...\n'),
+    sleep(1),
     valid_moves(GameState, Moves),
     choose_move(Level, GameState, Moves, Move).
 
@@ -111,7 +115,21 @@ choose_move(1, _GameState, Moves, Move):-
 choose_move(2, GameState, Moves, Move):-
     setof(Value-Mv, (NewState)^( member(Mv, Moves),
         move(GameState, Mv, NewState),
-        evaluate_board(GameState, NewState, Value)), [_V-Move|_]).
+        evaluate_board(GameState, NewState, Value)), [Best|List]),
+    get_same_values(Best, List, Res),
+    random_select(Move, Res, _).
+
+/*
+* Returns a list with all moves that have the same value according to the evalution done previously:
+* get_same_values(+MoveSet, +MoveSetList, -Result)
+* MoveSet = Value-Move
+*/
+get_same_values(_-Move, [], [Move]).
+get_same_values(Value-Move, [V-Mv|List], [Mv|Res]):-
+    Value = V,
+    get_same_values(Value-Move, List, Res).
+get_same_values(_-Move, _, [Move]).
+
 /*
 * Generates all valid moves for the board in the given state:
 * valid_moves(+GameState, -Moves)

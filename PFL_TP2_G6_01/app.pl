@@ -98,7 +98,8 @@ change_menu(_, instructions):- main.
 start(_, 4, Back):- Back.
 start(Mode, Value, _):- 
     Size is Value + 5,
-    game(Mode, Size). 
+    game(Mode, Size),
+    main. 
 
 /*
 * Prints the content of a file given by the Path:
