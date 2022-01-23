@@ -139,7 +139,7 @@ A lista de jogadas válidas é gerada pelo predicado `valid_moves(+GameState, -M
 
 ### Avaliação do Estado do Jogo
 
-O predicado `evaluate_board(+GameState, +NewGameState, -Value)` atribui um valor a um estado de jogo com base em duas heurísticas distintas:
+O predicado `evaluate_board(+GameState, +NewGameState, -Value)` atribui um valor a um estado de jogo com base em três heurísticas distintas:
 
 - o jogador marca ponto ao executar o _move_ que resulta no `NewGameState`? 
 - o jogador pode sofrer um ataque nas condições do `NewGameState`?
@@ -213,10 +213,29 @@ No nível de dificuldade 2, a escolha é feita com base no predicado `evaluate_b
 choose_move(2, GameState, Moves, Move):-
     setof(Value-Mv, (NewState)^( member(Mv, Moves),
         move(GameState, Mv, NewState),
-        evaluate_board(GameState, NewState, Value)), [_V-Move|_]).
+        evaluate_board(GameState, NewState, Value)), [Best|List]),
+    get_same_values(Best, List, Res),
+    random_select(Move, Res, _).
+
+get_same_values(_-Move, [], [Move]).
+get_same_values(Value-Move, [V-Mv|List], [Mv|Res]):-
+    Value = V,
+    get_same_values(Value-Move, List, Res).
+get_same_values(_-Move, _, [Move]).
 ~~~
+
+Tal como é possível constatar no excerto de código acima, é feita uma escolha aleatória de entre as melhores jogadas possíveis, ou seja, aquelas que têm o mesmo valor que a jogada que está à cabeça do _set_, dado que este é ordenado. 
 
 ## Conclusões
 
+Uma primeira limitação que nos ocorre é ao nível de _user interaction_, dado tratar-se de um jogo ASCII _based_. 
+
+Tal como pedido, foi implementado o algoritmo míope, seguindos certas heurísticas que consideramos relevantes. 
+
+Idealmente, a previsão da melhor jogada seria feita com recurso ao algoritmo minimax, no entanto, uma possível melhoria mais imediata à implementação que efetivamente se escolheu seria ao nível das heurísticas. Isto é, uma das heurísticas que está a ser tida em consideração é a de, tal como já mencionado, se um jogador pode atacar ou sofrer um ataque. Esta avaliação é feita através do predicado `can_attack(+GameState, +Player)`, que retorna verdadeiro ou falso consoante é possível atacar ou não, respetivamente. Ora, uma possível melhoria seria, não apenas avaliar a possibilidade de ocorrência de um ataque, mas sim o número de peças que poderiam ser atacadas de acordo com aquele estado de jogo.
+
 ## Bibliografia
 
+Relativamente ao jogo, não foi encontrada (quase) nenhuma documentação, para além do _link_ fornecido juntamente com o enunciado do trabalho prático.
+
+Portanto, para o desenvolvimento deste trabalho prático, a documentação consultada foi basicamente os _slides_ das aulas teóricas da UC e a documentação do SICStus Prolog, quer a versão HTML, quer a versão em PDF.
